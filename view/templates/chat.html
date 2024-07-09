@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with {{.Recipient}}</title>
+    <style>
+        #chat {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #message {
+            width: calc(100% - 22px);
+        }
+        .message {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .username {
+            font-weight: bold;
+        }
+        .text {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat with {{.Recipient}}</h1>
+    <div id="chat"></div>
+    <input type="text" id="message" placeholder="Type a message">
+    <button id="send">Send</button>
+
+    <script>
+        const username = "{{.Username}}";
+        const recipient = "{{.Recipient}}";
+
+        const socket = new WebSocket('ws://localhost:3000/ws');
+        const chat = document.getElementById('chat');
+        const messageInput = document.getElementById('message');
+        const sendButton = document.getElementById('send');
+
+        socket.onopen = () => {
+            console.log('Connected to the server');
+            socket.send(JSON.stringify({ type: 'register', username: username,recipient: recipient }));
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            switch (data.type) {
+                case 'message':
+                    displayMessage(data.from, data.text);
+                    break;
+            }
+        };
+
+        sendButton.onclick = () => {
+            const text = messageInput.value.trim();
+            if (text) {
+                socket.send(JSON.stringify({
+                    type: 'message',
+                    from: username,
+                    to: recipient,
+                    text: text,
+                }));
+                // displayMessage(username, text);
+                messageInput.value = '';
+            }
+        };
+
+        socket.onclose = () => {
+            console.log('Disconnected from the server');
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        function displayMessage(user, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            const usernameSpan = document.createElement('span');
+            usernameSpan.classList.add('username');
+            usernameSpan.textContent = user + ':';
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('text');
+            textSpan.textContent = text;
+            messageDiv.appendChild(usernameSpan);
+            messageDiv.appendChild(textSpan);
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{{ define "layout2" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Posts</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  {{ template "navbar-user" . }}
+  {{ template "myposts" . }}
+  {{ template "footer" . }}
+</body>
+</html>
+{{ end }}

@@ -1,0 +1,825 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #414752; /* Set background color for the entire page */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #d9d9d9; /* Add background color */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 7%), 0 1px 2px 0 rgb(0 0 0 / 5%); /* Shadow */
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 100%;
+    height: 58px;
+    box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2), inset -6px -6px 10px 0 rgba(225, 255, 255, 0.5);
+}
+
+nav {
+    flex-grow: 1;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+    column-gap: 10px;
+}
+
+li:nth-of-type(1) {
+    margin-left: auto;
+}
+
+li:nth-of-type(3) {
+    margin-left: auto;
+}
+
+.header-right {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /* Align items to the end (far right) */
+    align-items: center; /* Align items vertically */
+    flex-grow: 1; /* Allow the container to grow and take up remaining space */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+.button {
+    background-color: #ddd;
+    border: 30% black;
+    border-style: solid;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.buttonpost {
+    background-color: #ddd;
+    border: 30% black;
+    border-style: solid;
+    color: black;
+    padding: 30px 60px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.buttonpost:hover {
+    background-color: #f1f1f1;
+}
+
+.post {
+    color: white;
+    text-align: center;
+    align-content: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure flex items are stacked vertically */
+    align-items: center; /* Center items horizontally */
+    flex: 1; /* Allow the post section to grow */
+}
+
+.insidepost {
+    color: white;
+    align-items: flex-start; /* Align flex items to the start */
+    text-align: start; /* Left-align text horizontally within flex items */
+    align-content: flex-start; /* Align flex lines to the start */
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure flex items are stacked vertically */
+    flex: 1; /* Allow the post section to grow */
+    text-align: left;
+}
+
+.postbox {
+    background-color: rgba(217, 217, 217, 0.477);
+    color: #fff;
+    padding: 5% 25%;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between postboxes */
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.postboxin {
+    background-color: rgba(217, 217, 217, 0.477);
+    color: #fff;
+    padding: 5% 40px;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between postboxes */
+    cursor: pointer;
+    border-radius: 16px;
+    text-align: left;
+}
+
+.categNsort {
+    border: 1px solid black; /* Changed border style */
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    padding: 25px 5%; /* Adjusted padding */
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between items */
+    border-radius: 16px;
+}
+
+.categorize {
+    border: 1px solid black; /* Changed border style */
+    background-color: rgba(217, 217, 217, 0.477);
+    color: #000000;
+    padding: 25px 5%; /* Adjusted padding */
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between items */
+    border-radius: 16px;
+}
+
+.postinfo {
+    border: 1px solid black; /* Changed border style */
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    padding: 10px 10%; /* Adjusted padding */
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between items */
+    border-radius: 16px;
+    font-size: 14px;
+    height: 300px;
+    margin-left: 50px;
+}
+
+main {
+    min-height: 100vh;
+    background: #414752; /* Changed to hexadecimal color code */
+    position: relative;
+    z-index: 1;
+    font: 16px/1.4 system-ui, sans-serif;
+    padding: 2rem;
+    display: flex;
+    flex-grow: 1;
+}
+
+footer {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #d9d9d9; /* Changed to match the header color */
+    display: grid;
+    place-items: center;
+    padding: 50px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+p {
+    max-width: 600px;
+    margin: 0 auto 1rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999; /* Increase the z-index value */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.categorize-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown {
+    position: absolute;
+    bottom: 100%; /* Position above the button */
+    left: 0;
+    min-width: 150px; /* Adjust width as needed */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1); /* Add shadow for a dropdown effect */
+    display: none;
+    z-index: 1; /* Ensure dropdown is above other content */
+    margin-top: 10px; /* Add margin to create space */
+}
+
+.dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown ul li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Add a border between items */
+}
+
+.dropdown ul li:last-child {
+    border-bottom: none; /* Remove border from the last item */
+}
+
+.dropdown ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.dropdown ul li a:hover {
+    background-color: #f5f5f5;
+}
+
+.fa-thumbs-up {
+    font-size: 25px;
+    color: white;
+    transition: color 0.3s;
+}
+
+.fa-thumbs-up:hover {
+    color: red;
+}
+
+.clicked {
+    color: red !important; /* Color of the icon when clicked */
+}
+
+.fa-thumbs-down {
+    font-size: 25px;
+    color: white;
+    transition: color 0.3s;
+}
+
+.fa-thumbs-down:hover {
+    color: red;
+}
+
+.fa-comment {
+    font-size: 25px;
+    color: white;
+    transition: color 0.3s;
+}
+
+.fa-comment:hover {
+    color: red;
+}
+
+.forum-container {
+    position: relative;
+}
+
+.forum-text {
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    position: relative;
+}
+
+.forum-text span {
+    display: inline-block;
+    opacity: 0;
+    position: relative;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.forum-text span.active {
+    opacity: 1;
+    transform: translateX(0) !important;
+}
+
+.forum-text span:first-child {
+    opacity: 1;
+}
+
+.forum-text span.animate {
+    animation: runAround 2s ease forwards;
+}
+
+.forum-text span:nth-child(2) {
+    opacity: 1;
+    animation-delay: 0.2s;
+}
+
+.forum-text span:nth-child(3) {
+    opacity: 1;
+    animation-delay: 0.4s;
+}
+
+.forum-text span:nth-child(4) {
+    opacity: 1;
+    animation-delay: 0.6s;
+}
+
+.forum-text span:nth-child(5) {
+    opacity: 1;
+    animation-delay: 0.8s;
+}
+
+@keyframes runAround {
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+
+    25% {
+        opacity: 1;
+        transform: translateX(50px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateX(100px);
+    }
+
+    75% {
+        opacity: 1;
+        transform: translateX(50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.header-right .button {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.header-right .button i {
+    margin-right: 8px;
+    transition: opacity 0.3s ease;
+}
+
+.header-right .button span {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.header-right .button:hover i {
+    opacity: 1;
+}
+
+.header-right .button:hover span {
+    display: inline;
+    opacity: 1;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #414752; /* Set background color for the entire page */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #d9d9d9; /* Add background color */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 7%), 0 1px 2px 0 rgb(0 0 0 / 5%); /* Shadow */
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 100%;
+    height: 58px;
+    box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2), inset -6px -6px 10px 0 rgba(225, 255, 255, 0.5);
+}
+
+nav {
+    flex-grow: 1;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+    column-gap: 10px;
+}
+
+li:nth-of-type(1) {
+    margin-left: auto;
+}
+
+li:nth-of-type(3) {
+    margin-left: auto;
+}
+
+.header-right {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /* Align items to the end (far right) */
+    align-items: center; /* Align items vertically */
+    flex-grow: 1; /* Allow the container to grow and take up remaining space */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+.button {
+    background-color: #ddd;
+    border: 30% black;
+    border-style: solid;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.buttonpost {
+    background-color: #ddd;
+    border: 30% black;
+    border-style: solid;
+    color: black;
+    padding: 30px 60px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.buttonpost:hover {
+    background-color: #f1f1f1;
+}
+
+.post {
+    color: white;
+    text-align: center;
+    align-content: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure flex items are stacked vertically */
+    align-items: center; /* Center items horizontally */
+    flex: 1; /* Allow the post section to grow */
+}
+
+.insidepost {
+    color: white;
+    align-items: flex-start; /* Align flex items to the start */
+    text-align: start; /* Left-align text horizontally within flex items */
+    align-content: flex-start; /* Align flex lines to the start */
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure flex items are stacked vertically */
+    flex: 1; /* Allow the post section to grow */
+    text-align: left;
+}
+
+.postbox {
+    background-color: rgba(217, 217, 217, 0.477);
+    color: #fff;
+    padding: 5% 25%;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between postboxes */
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+.postboxin {
+    background-color: rgba(217, 217, 217, 0.477);
+    color: #fff;
+    padding: 5% 40px;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between postboxes */
+    cursor: pointer;
+    border-radius: 16px;
+    text-align: left;
+}
+
+.categNsort {
+    border: 1px solid black; /* Changed border style */
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    padding: 25px 5%; /* Adjusted padding */
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between items */
+    border-radius: 16px;
+}
+
+.categorize {
+    border: 1px solid black; /* Changed border style */
+    background-color: rgba(217, 217, 217, 0.477);
+    color: #000000;
+    padding: 25px 5%; /* Adjusted padding */
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between items */
+    border-radius: 16px;
+}
+
+.postinfo {
+    border: 1px solid black; /* Changed border style */
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    padding: 10px 10%; /* Adjusted padding */
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 20px; /* Adjust spacing between items */
+    border-radius: 16px;
+    font-size: 14px;
+    height: 300px;
+    margin-left: 50px;
+}
+
+main {
+    min-height: 100vh;
+    background: #414752; /* Changed to hexadecimal color code */
+    position: relative;
+    z-index: 1;
+    font: 16px/1.4 system-ui, sans-serif;
+    padding: 2rem;
+    display: flex;
+    flex-grow: 1;
+}
+
+footer {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #d9d9d9; /* Changed to match the header color */
+    display: grid;
+    place-items: center;
+    padding: 50px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+p {
+    max-width: 600px;
+    margin: 0 auto 1rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999; /* Increase the z-index value */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.categorize-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown {
+    position: absolute;
+    bottom: 100%; /* Position above the button */
+    left: 0;
+    min-width: 150px; /* Adjust width as needed */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1); /* Add shadow for a dropdown effect */
+    display: none;
+    z-index: 1; /* Ensure dropdown is above other content */
+    margin-top: 10px; /* Add margin to create space */
+}
+
+.dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown ul li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Add a border between items */
+}
+
+.dropdown ul li:last-child {
+    border-bottom: none; /* Remove border from the last item */
+}
+
+.dropdown ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.dropdown ul li a:hover {
+    background-color: #f5f5f5;
+}
+
+.fa-thumbs-up {
+    font-size: 25px;
+    color: white;
+    transition: color 0.3s;
+}
+
+.fa-thumbs-up:hover {
+    color: red;
+}
+
+.fa-thumbs-down {
+    font-size: 25px;
+    color: white;
+    transition: color 0.3s;
+}
+
+.fa-thumbs-down:hover {
+    color: red;
+}
+
+.fa-comment {
+    font-size: 25px;
+    color: white;
+    transition: color 0.3s;
+}
+
+.fa-comment:hover {
+    color: red;
+}
+
+.forum-container {
+    position: relative;
+}
+
+.forum-text {
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    position: relative;
+}
+
+.forum-text span {
+    display: inline-block;
+    opacity: 0;
+    position: relative;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.forum-text span.active {
+    opacity: 1;
+    transform: translateX(0) !important;
+}
+
+.forum-text span:first-child {
+    opacity: 1;
+}
+
+.forum-text span.animate {
+    animation: runAround 2s ease forwards;
+}
+
+.forum-text span:nth-child(2) {
+    opacity: 1;
+    animation-delay: 0.2s;
+}
+
+.forum-text span:nth-child(3) {
+    opacity: 1;
+    animation-delay: 0.4s;
+}
+
+.forum-text span:nth-child(4) {
+    opacity: 1;
+    animation-delay: 0.6s;
+}
+
+.forum-text span:nth-child(5) {
+    opacity: 1;
+    animation-delay: 0.8s;
+}
+
+@keyframes runAround {
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+
+    25% {
+        opacity: 1;
+        transform: translateX(100px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateX(200px);
+    }
+
+    75% {
+        opacity: 1;
+        transform: translateX(100px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.header-right .button {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.header-right .button i {
+    margin-right: 8px;
+    transition: opacity 0.3s ease;
+}
+
+.header-right .button span {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.header-right .button:hover i {
+    opacity: 1;
+}
+
+.header-right .button:hover span {
+    display: inline;
+    opacity: 1;
+}

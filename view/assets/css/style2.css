@@ -1,0 +1,312 @@
+
+    .post-header {
+      padding-top: 5px;
+      text-align: center;
+    }
+
+    .post-link {
+      display: block;
+      padding-top: 10px;
+      text-align: center;
+    }
+    
+
+    span {
+      display: inline-block;
+      margin: 0px;
+      float: right;
+    }
+
+    .GFG {
+      transform: scale(-1, 1);
+      color: #000080;
+      -moz-transform: scale(-1, 1);
+      -webkit-transform: scale(-1, 1);
+      -o-transform: scale(-1, 1);
+      -ms-transform: scale(-1, 1);
+      transform: scale(-1, 1);
+    }
+
+    .postbox,
+    .postboxback {
+      background-color: #5B6470;
+      color: #fff;
+      padding: 20px 10%;
+      margin-bottom: 20px;
+      cursor: pointer;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      text-decoration: none;
+      height: 100%; /* Ensures both front and back cards have full height */
+    }
+
+    .postboxother {
+      background-color: rgba(255, 255, 255, 0.571);
+      color: #000000;
+      padding: 10px;
+      text-decoration: none;
+      margin-bottom: 20px;
+      cursor: pointer;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .button-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      width: 100%;
+    }
+
+    .button-container .num {
+      padding-left: 5px;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-evenly;
+      padding-bottom: 10px;
+    }
+
+    .header-container h4 {
+      margin: 0 20px; /* Adds space between the h4 elements */
+    }
+
+    /* The flip card container - set the width and height to match the postbox */
+    .flip-card {
+      /* background-color: #5B6470; */
+      border-radius: 16px;
+      width: 80%;
+      height: 25%;
+      perspective: 1000px; /* Remove this if you don't want the 3D effect */
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    /* This container is needed to position the front and back side */
+    .flip-card-inner {
+      background-color: #5B6470;
+      border-radius: 16px;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      cursor: pointer;
+      transform-style: preserve-3d;
+    }
+
+    /* Do an horizontal flip when you move the mouse over the flip box container */
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    /* Position the front and back side */
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden; /* Safari */
+      backface-visibility: hidden;
+      cursor: pointer;
+    }
+
+    /* Style the front side */
+    .flip-card-front {
+      background-color: transparent;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px 10%;
+      border-radius: 16px;
+    }
+
+    /* Style the back side */
+    .flip-card-back {
+      background-color: #5B6470;
+      color: white;
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px 10%;
+      border-radius: 16px;
+    }
+
+
+    .alert-container {
+       
+    }
+    
+    .alert {
+        max-width: 500px;
+        width: 90%;
+        padding: 20px;
+        margin: auto;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background-color: #d4edda;
+        color: #155724;
+        position: relative;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bolder;
+    }
+    
+    .alert .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        font-weight: bold;
+        color: #000;
+        cursor: pointer;
+        outline: none;
+    }
+    #clearbtn, #filterbtn {
+    font-size: 1rem; 
+    padding: 0.5rem 1rem; 
+    margin: 0.3125rem 0;
+    background-color: #7289da; 
+    color: white; 
+    border: none; 
+    border-radius: 0.25rem; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+#clearbtn:hover, #filterbtn:hover {
+    background-color: #5b6eae; 
+}
+
+#clearbtn:focus, #filterbtn:focus {
+    outline: none; 
+}
+
+/* Like/Dislike Styles */
+.liked {
+    color: red;
+}
+
+.disliked {
+    color: blue;
+}
+
+/* Flip Card Styles */
+.flip-card {
+    margin-bottom: 100px;
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    margin-bottom: 50px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    word-wrap: break-word;
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    word-wrap: break-word;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+.postbox,
+.postboxback {
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Header and Title Styles */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.header-container h4 {
+    margin: 0 20px;
+}
+
+.title-container {
+    text-align: center;
+    padding-top: 0.625rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Content and Button Container Styles */
+.content-container {
+    text-align: center;
+    padding: 1.25rem;
+    overflow: visible;
+    flex-grow: 1;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.625rem;
+    width: 100%;
+}
+
+.button-container div {
+    display: flex;
+    align-items: center;
+}
+
+.button-container .num {
+    padding-left: 0.3125rem;
+}
+
+/* Filter Styles */
+.filters {
+    margin-bottom: 1.25rem;
+}
+
+.filters label {
+    display: block;
+}
+
+/* Responsive Styles */
+@media (max-width: 37.5rem) {
+    .flip-card {
+        width: 100%;
+        margin: 0.625rem 0;
+    }
+    .header-container h4, .title-container h2 {
+        font-size: 1rem;
+    }
+}
+

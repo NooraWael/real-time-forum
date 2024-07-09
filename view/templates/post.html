@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Post Details</title>
+    <link href="/css/style3.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        #clearbtn {
+            font-size: 16px;
+            padding: 8px 16px;
+            margin: 5px 0;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #clearbtn:hover {
+            background-color: #5b6eae;
+        }
+
+        #clearbtn:focus {
+            outline: none;
+        }
+
+        .liked {
+            color: red;
+        }
+
+        .disliked {
+            color: blue;
+        }
+
+        .likes-dislikes {
+            text-align: center;
+        }
+
+        .likes-dislikes i,
+        .likes-dislikes span {
+            display: inline-block;
+            margin: 0 0.3125rem;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="clearbtn" onclick="location.href='/'">Back</button>
+    <div class="container">
+        <div class="post-details">
+            <h6 class="time-elapsed" data-time="{{ .Post.Created_At }}">{{ .Post.Created_At.Format "02/01/2006 03:04 PM" }}</h6>
+            <h3 style="text-transform: uppercase;">{{ .Post.Title }}</h3>
+            <h4 style="float: right;">Shared by: {{ .Post.Author }}</h4>
+            <h4 style="float: left;">Category: </h4>
+            {{ range .Post.Categories }}
+            <h4 style="float: left; margin-right: 10px;">  {{ . }}  </h4>
+            {{ end }}
+            <br>
+        </div>
+        <div class="post-details likes-dislikes">
+            <div>
+                <i class="fa-solid fa-thumbs-up {{ if eq .Post.UserLikeStatus 1 }}liked{{ end }}" onclick='addLike("{{.Post.ID}}", "like")'></i>
+                <span class="likes-count-post">{{ .Post.Likes }}</span>
+                <i class="fa-solid fa-thumbs-down {{ if eq .Post.UserLikeStatus 0 }}disliked{{ end }}" onclick="addLike('{{.Post.ID}}', 'dislike')"></i>
+                <span class="dislikes-count-post">{{ .Post.DisLikes }}</span>
+            </div>
+        </div>
+        <div class="post-details">
+            <p>{{ .Post.Content }}</p>
+            <form id="commentForm" action="/addcomment" method="post">
+                <input type="hidden" name="postID" value="{{ .Post.ID }}">
+                <textarea id="content" name="content" rows="4" cols="100" placeholder="Write a comment..." maxlength="280"></textarea><br>
+                <div class="char-counter" id="charCounter">280 characters remaining</div>
+                <span id="contentError" class="error"></span>
+                <button id="submitBtn" type="submit" disabled>Comment</button>
+            </form>
+        </div>
+        <div class="comments">
+            {{ range .Comments }}
+            <div class="comment" id="comment-{{ .ID }}">
+                <p class="comment-info">Comment by: {{ .Author }} - {{ .Created_At }}</p>
+                <p class="comment-content">{{ .Content }}</p>
+                <div class="comment-actions likes-dislikes">
+                    <span class="likes-count">{{ .Likes }}</span>
+                    <i class="fa fa-thumbs-up" onclick='addLikeComment("{{ .PostID }}", "{{ .ID }}", "like")'></i>
+                    <span class="dislikes-count">{{ .DisLikes }}</span>
+                    <i class="fa fa-thumbs-down" onclick='addLikeComment("{{ .PostID }}", "{{ .ID }}", "dislike")'></i>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentInput = document.getElementById('content');
+            const submitBtn = document.getElementById('submitBtn');
+            const contentError = document.getElementById('contentError');
+
+            // Function to validate content
+            function validateContent() {
+                const contentValue = contentInput.value.trim();
+                if (contentValue === '') {
+                    contentError.style.color = 'red';
+                    contentError.textContent = 'Comment cannot be empty';
+                    return false;
+                } else {
+                    contentError.textContent = '';
+                    return true;
+                }
+            }
+
+            function toggleSubmitButton() {
+                submitBtn.disabled = !validateContent();
+            }
+
+            contentInput.addEventListener('input', toggleSubmitButton);
+            document.getElementById('commentForm').addEventListener('submit', function(event) {
+                if (!validateContent()) {
+                    event.preventDefault(); // if validation fails
+                }
+            });
+        });
+    </script>
+
+    <script src="/js/commentlikes.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/4ff99e7c8c.js" crossorigin="anonymous"></script>
+    <link href="/css/login.css" rel="stylesheet">
+    <title>Login</title>
+
+</head>
+
+<body>
+    <div class="container">
+        <h2>Welcome to the Forum</h2>
+        <button class="back-button"><a href="/">&larr; Back</a></button>
+        <form action="/login/process" method="post">
+            <input type="text" name="user_name" placeholder="Username" value="{{.Username}}" required>
+            <div class="password-container">
+                <input type="password" id="password" name="password" placeholder="Password" value="" required>
+                <i class="fas fa-eye" id="togglePassword"></i>
+            </div>
+            {{if .Message}}
+            <p class="message">{{.Message}}</p>
+            {{end}}
+            <button type="submit">Login</button>
+        </form>
+        <div class="signup-link">
+            {{ if .Message }}
+            {{ .Message }}<br>
+            don't have an account? <a href="/signup">Sign up</a>
+            {{ else }}
+            don't have an account? <a href="/signup">Sign up</a>
+            {{ end }}
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function () {
+            // Toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // Toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+
+</html>

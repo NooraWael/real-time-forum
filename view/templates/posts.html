@@ -1,0 +1,223 @@
+{{ define "posts" }}
+<main>
+    <link href="/css/style2.css" rel="stylesheet">
+    {{ if .SuccessMessage }}
+    <div class="alert-container">
+        <div class="alert alert-success" role="alert" onclick="this.parentElement.style.display='none';">
+            {{ .SuccessMessage }}
+            <button type="button" class="close" onclick="this.parentElement.parentElement.style.display='none';">&times;</button>
+        </div>
+    </div>
+    {{ end }}
+
+    <div class="post">
+        <h2 style="margin-bottom: 1.25rem;">Posts</h2>
+        {{ range .Posts2 }}
+        <div class="flip-card" id="post-{{ .ID }}">
+            <a href="/posts/{{ .ID }}" style="text-decoration: none; color: inherit;">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front postbox">
+                        <div class="header-container">
+                            <h4>{{ .Author }} - <span class="time-elapsed" data-time="{{ .Created_At }}">{{ .Created_At.Format "02/01/2006 03:04 PM" }}</span></h4>
+                            
+                        </div>
+                        <div class="header-container">
+                        <h4 style="float: left">Category:</h4>
+                            {{ range .Categories }}
+                            <h4 style="float: left; margin-right: 10px;"> {{ . }}</h4>
+                            {{ end }}
+                        </div>
+                        <div class="title-container">
+                            <h2 style="text-transform: capitalize;">{{ .Title }}</h2>
+                        </div>
+                    </div>
+                    <div class="flip-card-back postboxback">
+                        <div class="content-container">
+                            <h4 style="max-width: 12.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ .Content }}</h4>
+                        </div>
+                        <div class="button-container">
+                            <div>
+                                <i class="fa-solid fa-comment" style="margin-right: 0.3125rem;"></i>
+                                <span class="num"></span>
+                            </div>
+                            <div>
+                                {{ if $.LoggedIn }}
+                                <i class="fa-solid fa-thumbs-up {{ if eq .UserLikeStatus 1 }}liked{{ end }}" onclick='event.preventDefault(); addLike("{{ .ID }}", "like")' style="margin-right: 0.3125rem;"></i>
+                                {{ else }}
+                                    <i class="fa-solid fa-thumbs-up" style="margin-right: 0.3125rem;"></i>
+                                {{end}}
+                                <span class="likes-count">{{ .Likes }}</span>
+                            </div>
+                            <div>
+                                {{ if $.LoggedIn }} 
+                                <i class="fa-solid fa-thumbs-down {{ if eq .UserLikeStatus 0 }}disliked{{ end }}" onclick='event.preventDefault(); addLike("{{ .ID }}", "dislike")' style="margin-right: 0.3125rem;"></i>
+                                {{ else }}
+                                    <i class="fa-solid fa-thumbs-down" style="margin-right: 0.3125rem;"></i>
+                                {{ end }}
+                                <span class="dislikes-count">{{ .DisLikes }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{ end }}
+    </div>
+
+    <div class="categNsort">
+        <div class="filters">
+            <form action="/" method="get">
+                <h3>Filter by Categories</h3>
+                {{ range .Categories }}
+                <label><input type="checkbox" name="categories" value="{{ . }}"> {{ . }}</label><br>
+                {{ end }}
+                <button type=button id="clearbtn" onclick="window.location.href=window.location.href.split('?')[0]">Clear</button>
+                <button type="submit" id="filterbtn" > Filter </button>
+            </form>
+            </form>
+        </div>
+    </div>
+</main>
+
+<style>
+/* Button Styles */
+#clearbtn, #filterbtn {
+    font-size: 1rem; 
+    padding: 0.5rem 1rem; 
+    margin: 0.3125rem 0;
+    background-color: #7289da; 
+    color: white; 
+    border: none; 
+    border-radius: 0.25rem; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+#clearbtn:hover, #filterbtn:hover {
+    background-color: #5b6eae; 
+}
+
+#clearbtn:focus, #filterbtn:focus {
+    outline: none; 
+}
+
+/* Like/Dislike Styles */
+.liked {
+    color: red;
+}
+
+.disliked {
+    color: blue;
+}
+
+/* Flip Card Styles */
+.flip-card {
+    margin-bottom: 100px;
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    margin-bottom: 50px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    word-wrap: break-word;
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    word-wrap: break-word;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+.postbox,
+.postboxback {
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Header and Title Styles */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.header-container h4 {
+    margin: 0 20px;
+}
+
+.title-container {
+    text-align: center;
+    padding-top: 0.625rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Content and Button Container Styles */
+.content-container {
+    text-align: center;
+    padding: 1.25rem;
+    overflow: visible;
+    flex-grow: 1;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.625rem;
+    width: 100%;
+}
+
+.button-container div {
+    display: flex;
+    align-items: center;
+}
+
+.button-container .num {
+    padding-left: 0.3125rem;
+}
+
+/* Filter Styles */
+.filters {
+    margin-bottom: 1.25rem;
+}
+
+.filters label {
+    display: block;
+}
+
+/* Responsive Styles */
+@media (max-width: 37.5rem) {
+    .flip-card {
+        width: 100%;
+        margin: 0.625rem 0;
+    }
+    .header-container h4, .title-container h2 {
+        font-size: 1rem;
+    }
+}
+</style>
+
+<script src="/js/ajaxlikes.js"></script>
+<script src="/js/filter.js"></script>
+{{ end }}

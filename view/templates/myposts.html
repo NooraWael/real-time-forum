@@ -1,0 +1,48 @@
+{{ define "posts" }}
+<main>
+    <link href="/css/liked.css" rel="stylesheet">
+    <script src="/js/updateDelete.js"></script>
+
+
+    <div class="container">
+        <button class="back-btn" onclick="location.href='/'">Back</button>
+
+        <!-- Statistics Panel TODO fix -->
+        <div class="statistics-panel">
+            <div class="stat-item">
+                <i class="fa fa-file-alt"></i>
+                <div class="stat-info">
+                    <span class="stat-count">{{ .TotalPosts }}</span>
+                    <span class="stat-label">Total Posts</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fa fa-thumbs-up"></i>
+                <div class="stat-info">
+                    <span class="stat-count">{{ .TotalLikes }}</span>
+                    <span class="stat-label">Total Likes</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fa fa-thumbs-down"></i>
+                <div class="stat-info">
+                    <span class="stat-count">{{ .TotalDislikes }}</span>
+                    <span class="stat-label">Total Dislikes</span>
+                </div>
+            </div>
+        </div>
+
+
+        <h2 class="posts-header">My Posts</h2>
+        {{ range .Posts }}
+        <a href="/posts/{{ .ID }}" style="text-decoration:none">
+            <div class="post-item" id="post-{{ .ID }}">
+                <h2 class="post-title">{{ .Title }}</h2>
+                <p class="post-content">{{ .Content }}</p>
+                <!-- <button class="edit-btn" onclick="toggleEdit('{{ .ID }}')">Edit</button> -->
+            </div>
+        </a>
+        {{ end }}
+    </div>
+</main>
+{{ end }}
