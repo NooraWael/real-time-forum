@@ -452,7 +452,7 @@ function fetchAndRenderPosts() {
                             <div class="button-container">
                                 <div onclick="navigateToPost(${post.ID})">
                                     <i class="fa-solid fa-comment" style="margin-right: 5px;"></i>
-                                    <span class="num">0</span>
+                                    <span class="num"></span>
                                 </div>
                                 <div>
                                     <i class="fa-solid fa-thumbs-up ${post.UserLikeStatus === 1 ? 'liked' : ''}" onclick='event.preventDefault(); addLike("${post.ID}", "like")' style="margin-right: 5px;"></i>
