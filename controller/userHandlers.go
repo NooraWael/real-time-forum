@@ -212,7 +212,6 @@ func logout(w http.ResponseWriter, r *http.Request) {
 
 func chatUser(w http.ResponseWriter, r *http.Request) {
 	recipientUsername := strings.TrimPrefix(r.URL.Path, "/api/userchat/")
-
 	// Retrieve the logged-in user's session
 	sessionCookie, err := r.Cookie("user_session")
 	if err != nil {
@@ -225,6 +224,14 @@ func chatUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid session", http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println(recipientUsername)
+	if (recipientUsername == ""){
+		recipientUsername = session.UserName
+	}
+
+	
+
 
 	onlineusers,err := model.GetAllOnlineUsers()
 	if err != nil {
