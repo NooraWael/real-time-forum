@@ -71,6 +71,12 @@ export function renderUserChat(data) {
         socket.send(JSON.stringify({ type: 'register', username: username, recipient: recipient }));
     };
 
+    window.onbeforeunload = () => {
+        socket.send(JSON.stringify({ type: 'disconnect', username: username }));
+        socket.close();
+    };
+
+
     socket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg.type === 'message' && msg.from != recipient && msg.from != username) {
@@ -81,11 +87,13 @@ export function renderUserChat(data) {
             renderMessages();
         } else if (msg.type === 'message' && msg.from === recipient) {
             displayMessage(msg.from, msg.text, false);
+            updateUserList(recipient,msg.text)
         } else if (msg.type === 'userList') {
             onlineUsers = msg.users;
             updateOnlineUsers();
         } else {
             displayMessage(msg.from, msg.text, true);
+            updateUserList(recipient,msg.text)
         } // Display only if from matches recipient
     };
 
@@ -109,6 +117,8 @@ export function renderUserChat(data) {
     socket.onerror = (error) => {
         console.error('WebSocket error:', error);
     };
+
+    
 
     function displayMessage(user, text, isSent) {
         const messageDiv = document.createElement('div');

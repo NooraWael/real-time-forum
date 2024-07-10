@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"forum/model"
 	"net/http"
 )
@@ -105,6 +104,5 @@ func getOnlineUsers(w http.ResponseWriter, r *http.Request) {
 		errorHandler(w, http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(data)
 	json.NewEncoder(w).Encode(data)
 }

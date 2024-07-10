@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"strings"
 	"time"
 )
 
@@ -66,6 +67,9 @@ func (m *Message) Create() error {
 	if err != nil {
 		return err
 	}
+    if(strings.TrimSpace(m.Sender) == "" || strings.TrimSpace(m.Recipient) == "" ){
+        return nil
+    }
 	_, err = stmt.Exec(m.Sender, m.Recipient, m.Content, m.SentAt, m.IsRead)
 	if err != nil {
 		return err
