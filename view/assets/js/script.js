@@ -3,7 +3,7 @@ import {renderSignup, renderLogin} from './components/loginAndRegister.js';
 import {addPost, renderAddPost} from './components/addpost.js';
 import {renderNotFound,navigateToHome} from './components/errors.js';
 import {fetchAndRenderUserChat,renderUserChat} from './components/chats.js';
-import {fetchAndRenderPostDetails, renderPostDetails, fetchAndRenderPosts} from './components/post.js';
+import {fetchAndRenderPostDetails, renderPostDetails, fetchAndRenderPosts, NavigateToPost} from './components/post.js';
 import {fetchAndRenderOnlineUsers,renderOnlineUsers} from './components/onlineusers.js';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -80,7 +80,3 @@ function renderNavbar(elementId, navbarHTML) {
     document.getElementById(elementId).innerHTML = navbarHTML;
 }
 
-function navigateToPost(postId) {
-    history.pushState(null, null, `/posts/${postId}`);
-    fetchAndRenderPostDetails(postId);
-}

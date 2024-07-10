@@ -143,7 +143,7 @@ export function fetchAndRenderPosts() {
                                 <h4>${post.Author} - <span class="time-elapsed" data-time="${post.Created_At}">${new Date(post.Created_At).toLocaleString()}</span></h4>
                             </div>
                             <div class="header-container">
-                                <h4 style="float: left;" onclick="navigateToPost(${post.ID})">Category:</h4>
+                                <h4 style="float: left;" onclick="NavigateToPost(${post.ID})">Category:</h4>
                                 <h4 style="float: left; margin-right: 10px;">${categoriesString}</h4>
                             </div>
                             <div style="text-align: center; padding-top: 10px;">
@@ -153,9 +153,9 @@ export function fetchAndRenderPosts() {
                                 <p>${post.Content}</p>
                             </div>
                             <div class="button-container">
-                                <div onclick="navigateToPost(${post.ID})">
+                            <div onclick="window.location.href = '/posts/${post.ID}'">
                                     <i class="fa-solid fa-comment" style="margin-right: 5px;"></i>
-                                    <span class="num">0</span>
+                                    <span class="num"></span>
                                 </div>
                                 <div>
                                     <i class="fa-solid fa-thumbs-up ${post.UserLikeStatus === 1 ? 'liked' : ''}" onclick='event.preventDefault(); addLike("${post.ID}", "like")' style="margin-right: 5px;"></i>
@@ -171,6 +171,17 @@ export function fetchAndRenderPosts() {
                 postsContainer.innerHTML += postElement;
             });
 
+            
+
         })
+
+        
         .catch(error => console.error('Error fetching posts:', error));
+
+        
+}
+
+export function NavigateToPost(postId) {
+    history.pushState(null, null, `/posts/${postId}`);
+    fetchAndRenderPostDetails(postId);
 }
