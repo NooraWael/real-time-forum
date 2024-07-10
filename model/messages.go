@@ -1,7 +1,7 @@
 package model
 
 import (
-	"fmt"
+	"database/sql"
 	"time"
 )
 
@@ -31,9 +31,38 @@ func NewMessage(sender, recipient, content string) (*Message, error) {
 	}, nil
 }
 
+func GetMessageHistoryUser(sender string, recipients []string) ([][2]string, error) {
+
+    var messagePairs [][2]string
+
+    for _, recipient := range recipients {
+        var messageContent string
+        err := DB.QueryRow(`
+            SELECT content FROM messages 
+            WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?) 
+            ORDER BY sent_at DESC 
+            LIMIT 1`,
+            sender, recipient, recipient, sender,
+        ).Scan(&messageContent)
+        
+        if err != nil {
+            if err == sql.ErrNoRows {
+                messagePairs = append(messagePairs, [2]string{recipient, "None"})
+            } else {
+                return nil, err
+            }
+        } else {
+            messagePairs = append(messagePairs, [2]string{recipient, messageContent})
+        }
+    }
+
+    return messagePairs, nil
+}
+
+
 /* This function adds a new message to the messages table. */
 func (m *Message) Create() error {
-	stmt, err := DB.Prepare(`INSERT INTO messages (sender, recipient, message, sent_at, is_read) VALUES (?, ?, ?, ?, ?)`)
+	stmt, err := DB.Prepare(`INSERT INTO messages (sender, recipient, content, sent_at, is_read) VALUES (?, ?, ?, ?, ?)`)
 	if err != nil {
 		return err
 	}
@@ -43,6 +72,8 @@ func (m *Message) Create() error {
 	}
 	return nil
 }
+
+
 
 /* This function retrieves a message from the database by ID. */
 func GetMessageByID(id int) (*Message, error) {
@@ -88,11 +119,6 @@ func SaveMessage(sender, recipient, content string) error {
 
 // GetMessageHistory retrieves message history between two users from the database.
 func GetMessageHistory(sender, recipient string) ([]*Message, error) {
-    // Implement database query to retrieve message history
-    // Example query:
-	fmt.Println("hello")
-	fmt.Println(sender)
-	fmt.Println(recipient)
     rows, err := DB.Query(`SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?) ORDER BY sent_at`, sender, recipient, recipient, sender)
     if err != nil {
         return nil, err

@@ -1,27 +1,29 @@
 package controller
 
 import (
-	"fmt"
-	"forum/model"
-	"log"
-	"net/http"
+    "fmt"
+    "forum/model"
+    "log"
+    "net/http"
+    "sync"
 
-	"github.com/gorilla/websocket"
+    "github.com/gorilla/websocket"
 )
 
-// Upgrader upgrades HTTP connections to WebSocket connections.
-var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
-    CheckOrigin: func(r *http.Request) bool {
-        return true // Allow connections from any origin.
-    },
-}
+var (
+    upgrader = websocket.Upgrader{
+        ReadBufferSize:  1024,
+        WriteBufferSize: 1024,
+        CheckOrigin: func(r *http.Request) bool {
+            return true // Allow connections from any origin.
+        },
+    }
+    // Mutex for synchronizing access to user connections
+    mu sync.Mutex
+    // Map to store WebSocket connections by username
+    userConnections = make(map[string]*websocket.Conn)
+)
 
-var users = make(map[*websocket.Conn]string)
-
-// handleConnections handles incoming WebSocket connections.
-// handleConnections handles incoming WebSocket connections.
 func handleConnections(w http.ResponseWriter, r *http.Request) {
     ws, err := upgrader.Upgrade(w, r, nil)
     if err != nil {
@@ -42,15 +44,17 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
     switch msg["type"] {
     case "register":
-        users[ws] = msg["username"]
+        username := msg["username"]
+        mu.Lock()
+        userConnections[username] = ws
+        mu.Unlock()
+
         broadcastUserList()
 
         // Load message history between users
         sender := msg["username"]
         recipient := msg["recipient"] // Assuming recipient username is sent during registration
-        log.Printf("Sender: %s, Recipient: %s", sender, recipient)
         messages, err := model.GetMessageHistory(sender, recipient)
-        fmt.Println(messages)
         if err != nil {
             log.Printf("error retrieving message history: %v", err)
         } else {
@@ -77,7 +81,9 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
         err := ws.ReadJSON(&msg)
         if err != nil {
             log.Printf("error: %v", err)
-            delete(users, ws)
+            mu.Lock()
+            delete(userConnections, msg["username"])
+            mu.Unlock()
             break
         }
 
@@ -98,7 +104,9 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
             }
 
         case "disconnect":
-            delete(users, ws)
+            mu.Lock()
+            delete(userConnections, msg["username"])
+            mu.Unlock()
             broadcastUserList()
         }
     }
@@ -106,12 +114,9 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 // getUserConnByUsername returns the WebSocket connection for a given username.
 func getUserConnByUsername(username string) *websocket.Conn {
-    for conn, user := range users {
-        if user == username {
-            return conn
-        }
-    }
-    return nil
+    mu.Lock()
+    defer mu.Unlock()
+    return userConnections[username]
 }
 
 // sendMessage sends a message to a WebSocket connection.
@@ -124,24 +129,42 @@ func sendMessage(conn *websocket.Conn, from, text string) {
     if err := conn.WriteJSON(message); err != nil {
         log.Printf("error: %v", err)
         conn.Close()
-        delete(users, conn)
+        mu.Lock()
+        defer mu.Unlock()
+        delete(userConnections, getUsernameByConn(conn))
     }
 }
 
 // broadcastUserList broadcasts the list of online users to all connections.
 func broadcastUserList() {
-    userList := make([]string, 0, len(users))
-    for _, user := range users {
-        userList = append(userList, user)
+    mu.Lock()
+    defer mu.Unlock()
+    userList := make([]string, 0, len(userConnections))
+    for username := range userConnections {
+        userList = append(userList, username)
     }
-    for conn := range users {
+    for _, conn := range userConnections {
         if err := conn.WriteJSON(map[string]interface{}{
             "type":  "userList",
             "users": userList,
         }); err != nil {
             log.Printf("error: %v", err)
             conn.Close()
-            delete(users, conn)
+            mu.Lock()
+            defer mu.Unlock()
+            delete(userConnections, getUsernameByConn(conn))
         }
     }
+}
+
+// getUsernameByConn retrieves the username associated with a WebSocket connection.
+func getUsernameByConn(conn *websocket.Conn) string {
+    mu.Lock()
+    defer mu.Unlock()
+    for username, connection := range userConnections {
+        if connection == conn {
+            return username
+        }
+    }
+    return ""
 }

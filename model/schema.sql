@@ -1,4 +1,4 @@
--- Enable foreign key constraint checking
+
 PRAGMA foreign_keys = ON;
 
 -- Create a 'user' table
@@ -73,7 +73,7 @@ CREATE TABLE
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sender TEXT NOT NULL,
     recipient TEXT NOT NULL,
-    message TEXT NOT NULL,
+    content TEXT NOT NULL,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_read INTEGER DEFAULT 0
 );

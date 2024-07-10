@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"forum/model"
 	"net/http"
 	"strings"
@@ -230,14 +231,32 @@ func chatUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid session", http.StatusInternalServerError)
 		return
 	}
+
+	var filteredOnlineUsers []string
+for _, user := range onlineusers {
+    if user != session.UserName {
+        filteredOnlineUsers = append(filteredOnlineUsers, user)
+    }
+}
+
+
+	recentchats, err := model.GetMessageHistoryUser(session.UserName,filteredOnlineUsers)
+	if err != nil {
+		fmt.Println("here")
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+	
 	data := struct {
 		Username  string
 		Recipient string
 		Online []string
+		Recentchat [][2]string
 	}{
 		Username:  session.UserName,
 		Recipient: recipientUsername,
-		Online : onlineusers,
+		Online : filteredOnlineUsers,
+		Recentchat : recentchats,
 	}
 
     w.Header().Set("Content-Type", "application/json")

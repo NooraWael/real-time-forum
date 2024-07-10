@@ -609,7 +609,7 @@ footer {
 
 p {
     max-width: 600px;
-    margin: 0 0 1rem;
+    margin: 0 auto 1rem;
 }
 
 .modal {
