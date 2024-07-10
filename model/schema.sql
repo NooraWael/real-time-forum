@@ -1,3 +1,6 @@
+-- Enable foreign key constraint checking
+PRAGMA foreign_keys = ON;
+
 -- Create a 'user' table
 CREATE TABLE
     IF NOT EXISTS users (

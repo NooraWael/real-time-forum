@@ -2,6 +2,7 @@ body {
     font-family: sans-serif;
     margin: 0;
     background-color: #414752;
+    color: #ffffff;
 }
 h3, p {
     word-wrap: break-word;
@@ -34,7 +35,7 @@ header h1 {
 }
 
 .post-details {
-    background-color: #414752;
+    /* background-color: #657282; */
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
@@ -167,4 +168,14 @@ button:disabled {
 
 .fa-thumbs-up:hover, .fa-thumbs-down:hover {
     color: #5b6eae;
+}
+
+.likes-dislikes {
+    text-align: center;
+}
+
+.likes-dislikes i,
+.likes-dislikes span {
+    display: inline-block;
+    margin: 0 0.3125rem;
 }
