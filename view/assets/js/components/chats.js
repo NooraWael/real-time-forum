@@ -15,9 +15,11 @@ export function fetchAndRenderUserChat(username) {
         .then(data => {
             onlineUsers = data.Online || [];
             userChats = {};
-            data.Recentchat.forEach(chat => {
-                userChats[chat[0]] = chat[1];
-            });
+            if(data.Recentchat != null){
+                data.Recentchat.forEach(chat => {
+                    userChats[chat[0]] = chat[1];
+                });
+            }
             messageHistory = data.Messages || [];
             currentOffset = Math.max(0, messageHistory.length - PAGE_SIZE);
             renderUserChat(data); // Render user chat using data received

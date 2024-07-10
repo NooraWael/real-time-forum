@@ -123,3 +123,33 @@ func GetAllOnlineUsers() (allUsers[]string, err error) {
     return allUsers, nil
 
 } 
+
+func GetAllUsers() ([]string, error) {
+	stmt, err := DB.Prepare(`SELECT username FROM users`)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var usernames []string
+	for rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			return nil, err
+		}
+		usernames = append(usernames, username)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return usernames, nil
+}

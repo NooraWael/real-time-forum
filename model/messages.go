@@ -2,6 +2,8 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
+	"sort"
 	"strings"
 	"time"
 )
@@ -67,10 +69,12 @@ func (m *Message) Create() error {
 	if err != nil {
 		return err
 	}
+    location, err := time.LoadLocation("Europe/Moscow") // GMT+3
     if(strings.TrimSpace(m.Sender) == "" || strings.TrimSpace(m.Recipient) == "" ){
         return nil
     }
-	_, err = stmt.Exec(m.Sender, m.Recipient, m.Content, m.SentAt, m.IsRead)
+    m.SentAt = m.SentAt.In(location)
+	_, err = stmt.Exec(m.Sender, m.Recipient, m.Content, m.SentAt.Format("2006-01-02 15:04:05"), m.IsRead)
 	if err != nil {
 		return err
 	}
@@ -143,4 +147,68 @@ func GetMessageHistory(sender, recipient string) ([]*Message, error) {
     }
 
     return messages, nil
+}
+
+func GetMessageHistoryUserArranged(sender string, recipients []string) ([][2]string, error) {
+	type messageInfo struct {
+		Recipient    string
+		Content      string
+		HasMessage   bool
+		LastSentTime time.Time
+	}
+
+	var messageInfos []messageInfo
+
+	for _, recipient := range recipients {
+		var messageContent string
+		var sentAt time.Time
+		err := DB.QueryRow(`
+			SELECT content, sent_at FROM messages 
+			WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?) 
+			ORDER BY sent_at DESC 
+			LIMIT 1`,
+			sender, recipient, recipient, sender,
+		).Scan(&messageContent, &sentAt)
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				messageInfos = append(messageInfos, messageInfo{Recipient: recipient, Content: "None", HasMessage: false})
+			} else {
+				return nil, err
+			}
+		} else {
+			messageInfos = append(messageInfos, messageInfo{Recipient: recipient, Content: messageContent, HasMessage: true, LastSentTime: sentAt})
+		}
+	}
+
+	// Separate recipients with and without messages
+	var withMessages, withoutMessages []messageInfo
+	for _, info := range messageInfos {
+		if info.HasMessage {
+			withMessages = append(withMessages, info)
+		} else {
+			withoutMessages = append(withoutMessages, info)
+		}
+	}
+
+	// Sort with messages by LastSentTime (earliest to latest)
+	sort.Slice(withMessages, func(i, j int) bool {
+		return withMessages[i].LastSentTime.Before(withMessages[j].LastSentTime)
+	})
+
+	// Sort without messages alphabetically by Recipient
+	sort.Slice(withoutMessages, func(i, j int) bool {
+		return withoutMessages[i].Recipient < withoutMessages[j].Recipient
+	})
+
+	// Combine sorted lists
+	var sortedMessagePairs [][2]string
+	for _, info := range withMessages {
+		sortedMessagePairs = append(sortedMessagePairs, [2]string{info.Recipient, info.Content})
+	}
+	for _, info := range withoutMessages {
+		sortedMessagePairs = append(sortedMessagePairs, [2]string{info.Recipient, info.Content})
+	}
+	fmt.Println(sortedMessagePairs)
+	return sortedMessagePairs, nil
 }

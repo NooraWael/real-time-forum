@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+
 )
 
 func MuxSetup() (mux *http.ServeMux) {
@@ -45,5 +46,7 @@ func MuxSetup() (mux *http.ServeMux) {
 	mux.HandleFunc("GET /userchat/",redirecting)
 	mux.HandleFunc("/api/userchat/", chatUser)
 	mux.HandleFunc("/ws", handleConnections)
+	mux.HandleFunc("/users", redirecting)
+	mux.HandleFunc("/api/allusers",getAllUsers)
 	return
 }

@@ -106,3 +106,29 @@ func getOnlineUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(data)
 }
+
+
+func getAllUsers(w http.ResponseWriter, r *http.Request){
+	allUsers,err := model.GetAllUsers()
+	if err != nil{
+		errorHandler(w, http.StatusInternalServerError)
+		return
+	}
+
+
+    c, err := r.Cookie("user_session")
+    var session model.Session
+    if err == nil {
+        session, err = model.GetSession(c.Value)
+    }else {
+		errorHandler(w, http.StatusInternalServerError)
+		return
+	}
+	recentMessages,err := model.GetMessageHistoryUserArranged(session.UserName,allUsers)
+	if err != nil{
+		errorHandler(w, http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(recentMessages)
+}

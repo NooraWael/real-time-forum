@@ -5,6 +5,7 @@ import {renderNotFound,navigateToHome} from './components/errors.js';
 import {fetchAndRenderUserChat,renderUserChat} from './components/chats.js';
 import {fetchAndRenderPostDetails, renderPostDetails, fetchAndRenderPosts, NavigateToPost} from './components/post.js';
 import {fetchAndRenderOnlineUsers,renderOnlineUsers} from './components/onlineusers.js';
+import {fetchAndRenderAllUsers,renderAllUsers} from './components/allusers.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch user session status
@@ -59,6 +60,9 @@ function handleRoute(path) {
             case '/chats':
             fetchAndRenderOnlineUsers();
             break;
+            case '/users':
+                fetchAndRenderAllUsers();
+                break;
         default:
             if (path.startsWith('/userchat/')) {
                 const recipientUsername = path.substring(10); // Extract recipient username from URL
