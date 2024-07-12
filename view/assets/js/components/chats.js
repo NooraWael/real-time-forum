@@ -1,4 +1,5 @@
 import { styling } from './chatstyling.js';
+import {fetchAndRenderAllUsers} from './allusers.js'
 
 let onlineUsers = [];
 let userChats = {};
@@ -88,11 +89,13 @@ export function renderUserChat(data) {
             console.log(msg)
             displayMessage(msg.from, msg.text, false);
             updateUserList(recipient,msg.text)
+            fetchAndRenderAllUsers();
         } else if (msg.type === 'userList') {
             onlineUsers = msg.users;
             updateOnlineUsers();
         } else {
             displayMessage(msg.from, msg.text, true);
+            fetchAndRenderAllUsers();
         } // Display only if from matches recipient
     };
 

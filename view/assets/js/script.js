@@ -71,15 +71,19 @@ function handleRoute(path) {
     switch (path) {
         case '/':
             fetchAndRenderPosts();
+            fetchAndRenderAllUsers();
             break;
         case '/login':
             renderLogin();
+     
             break;
         case '/signup':
             renderSignup();
+      
             break;
         case '/addpost':
             renderAddPost();
+            fetchAndRenderAllUsers()
             break;
             case '/chats':
             fetchAndRenderOnlineUsers();
@@ -89,10 +93,13 @@ function handleRoute(path) {
                 break;
         default:
             if (path.startsWith('/userchat/')) {
+                fetchAndRenderAllUsers()
                 const recipientUsername = path.substring(10); // Extract recipient username from URL
                 fetchAndRenderUserChat(recipientUsername)}
+
             // Assume it's a post detail page
             else if (path.startsWith('/posts/')) {
+                fetchAndRenderAllUsers()
                 const postId = path.substring(7); // Extract post ID from URL
                 fetchAndRenderPostDetails(postId);
             } else {

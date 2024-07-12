@@ -51,7 +51,6 @@ export function userNavBar() {
             <div class="header-right">
                 <a class="button" href="/"><i class="fas fa-home"></i><span>Home</span></a>
                 <a class="button" href="/userchat"><i class="fas fa-comments"></i><span>Chats</span></a>
-                <a class="button" href="/users"><i class="fa-solid fa-user"></i><span>Users</span></a>
                 <a class="button" href="/addpost"><i class="fas fa-plus"></i><span>Add Post</span></a>
                 <a class="button" href="/logout"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></a>
             </div>
