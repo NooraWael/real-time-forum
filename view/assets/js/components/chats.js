@@ -67,7 +67,7 @@ export function renderUserChat(data) {
     const username = data.Username;
     const recipient = data.Recipient;
     recipient2 = recipient
-    const socket = new WebSocket('ws://localhost:3000/ws');
+    const socket = new WebSocket('ws://localhost:8080/ws');
     const chat = document.getElementById('chat');
     const messageInput = document.getElementById('message');
     const sendButton = document.getElementById('send');
@@ -80,6 +80,9 @@ export function renderUserChat(data) {
 
     socket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
+        if(msg.type === 'message'){
+            console.log(msg)
+        }
         if (msg.type === 'message' && msg.from != recipient && msg.from != username) {
             fetchAndRenderAllUsers();
         } else if (msg.type2 === 'history') {
@@ -88,7 +91,6 @@ export function renderUserChat(data) {
         } else if (msg.type === 'message' && msg.from === recipient) {
             console.log(msg)
             displayMessage(msg.from, msg.text, false);
-            updateUserList(recipient,msg.text)
             fetchAndRenderAllUsers();
         } else if (msg.type === 'userList') {
             onlineUsers = msg.users;
@@ -258,7 +260,6 @@ function renderUserList2() {
                     <div class="avatar">${user.charAt(0).toUpperCase()}</div>
                     <div class="username">${user}</div>
                 </div>
-                <div class="message-preview">${messageContent}</div>
             </a>`;
     }).join('');
 }

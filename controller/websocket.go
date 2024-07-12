@@ -1,13 +1,13 @@
 package controller
 
 import (
-    "fmt"
-    "forum/model"
-    "log"
-    "net/http"
-    "sync"
+	"fmt"
+	"forum/model"
+	"log"
+	"net/http"
+	"sync"
 
-    "github.com/gorilla/websocket"
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -40,7 +40,6 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    fmt.Println(msg)
 
     switch msg["type"] {
     case "register":
@@ -90,11 +89,15 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
         switch msg["type"] {
         case "message":
+            fmt.Println("we got here")
             recipientUsername := msg["to"]
             recipientConn := getUserConnByUsername(recipientUsername)
+            fmt.Println("sendingto ", msg["from"])
+            fmt.Println("sendingto", msg["to"])
             if recipientConn != nil {
                 sendMessage(recipientConn, msg["from"], msg["text"])
             }
+
             sendMessage(ws, msg["from"], msg["text"])
 
             // Store message in database

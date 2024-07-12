@@ -9,11 +9,11 @@ import (
 
 func main() {
 	server := http.Server{
-		Addr:    "0.0.0.0:3000",
+		Addr:    "0.0.0.0:8080",
 		Handler: controller.MuxSetup(),
 	}
 
-	log.Println("Server running on :3000")
+	log.Println("Server running on :8080")
 	log.Fatal("main.main", server.ListenAndServe())
 
 	defer model.DB.Close()

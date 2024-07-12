@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderNavbar('navbar', navbarHTML);
 
             if (session.UserName) {
-                const socket = new WebSocket('ws://localhost:3000/ws');
+                const socket = new WebSocket('ws://localhost:8080/ws');
 
                 socket.onopen = () => {
                     console.log('Connected to the server');
