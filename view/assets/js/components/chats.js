@@ -4,8 +4,10 @@ let onlineUsers = [];
 let userChats = {};
 let messageHistory = [];
 let currentOffset = 0;
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 let handleScroll;
+let recipient2 = "";
+let times = 0
 
 export function fetchAndRenderUserChat(username) {
     fetch(`/api/userchat/${username}`)
@@ -24,7 +26,6 @@ export function fetchAndRenderUserChat(username) {
                 });
             }
             messageHistory = data.Messages || [];
-            currentOffset = Math.max(0, messageHistory.length - PAGE_SIZE);
             renderUserChat(data); // Render user chat using data received
         })
         .catch(error => {
@@ -64,7 +65,7 @@ export function renderUserChat(data) {
 
     const username = data.Username;
     const recipient = data.Recipient;
-    setupEventListeners();
+    recipient2 = recipient
     const socket = new WebSocket('ws://localhost:3000/ws');
     const chat = document.getElementById('chat');
     const messageInput = document.getElementById('message');
@@ -80,11 +81,11 @@ export function renderUserChat(data) {
         const msg = JSON.parse(event.data);
         if (msg.type === 'message' && msg.from != recipient && msg.from != username) {
 
-        } else if (msg.type === 'history') {
-            messageHistory = msg.messages;
-            currentOffset = Math.max(0, messageHistory.length - PAGE_SIZE);
+        } else if (msg.type2 === 'history') {
+            messageHistory.push(msg)
             renderMessages();
         } else if (msg.type === 'message' && msg.from === recipient) {
+            console.log(msg)
             displayMessage(msg.from, msg.text, false);
             updateUserList(recipient,msg.text)
         } else if (msg.type === 'userList') {
@@ -146,37 +147,83 @@ export function renderUserChat(data) {
         userListContainer.innerHTML = renderUserList2();
     }
 
+    function renderMessages() {
+        const chat = document.getElementById('chat');
+        chat.innerHTML = ''; // Clear current messages
+    
+        currentOffset = Math.max(0, messageHistory.length - PAGE_SIZE);
+       
+        // Load the most recent PAGE_SIZE messages
+        const messagesToRender = messageHistory.slice(Math.max(0, messageHistory.length - PAGE_SIZE));
+        messagesToRender.forEach(message => {
+            if(message.from === recipient2){
+                displayMessage(message.from, message.text, false);
+            }else {
+                displayMessage(message.from, message.text, true);
+            }
+        });
+    
+    
+        chat.removeEventListener('scroll', handleScroll);
+        chat.addEventListener('scroll', handleScroll);
+    }
+
+    let handleScroll = throttle(() => {
+        const chat = document.getElementById('chat');
+        const maxScrollTop = chat.scrollHeight - chat.clientHeight;
+    
+        // Assuming that being "near the top" might correspond to a small negative number close to zero
+          // Check if the user is near the top of the chat (considering column-reverse layout)
+    if (chat.scrollTop < -maxScrollTop + 100 && currentOffset > 0) {
+        renderMoreMessages();
+    }
+}, 200);
    
+
+    function renderMoreMessages() {
+        const chat = document.getElementById('chat');
+
+        const oldScrollHeight = chat.scrollHeight; // Store the old scroll height to calculate the adjustment later
+        // Load previous messages
+        const nextOffset = Math.max(0, currentOffset - PAGE_SIZE);
+        const additionalMessages = messageHistory.slice(nextOffset, currentOffset);
+        currentOffset = nextOffset; // Update currentOffset
+    
+        // Use append directly for each new message
+        additionalMessages.forEach(message => {
+            const messageElement = createMessageElement(message.from, message.text, message.from === recipient2);
+            chat.appendChild(messageElement); // Append at the visual bottom, which is the actual DOM top
+        });
+    
+        // Adjust scroll position so the user does not notice the jump
+        // Only adjust if the user is near the visual bottom of the chat
+    }
 }
 
 
-function renderMessages() {
-    const chat = document.getElementById('chat');
-    chat.innerHTML = ''; // Clear current messages
 
-    const messagesToRender = messageHistory.slice(currentOffset, currentOffset + PAGE_SIZE);
-    messagesToRender.forEach(message => {
-        displayMessage(message.Sender, message.Content, false);
-    });
 
-    // Add the scroll event listener if not already added
-    chat.removeEventListener('scroll', handleScroll); // Remove the listener first to avoid duplicates
-    chat.addEventListener('scroll', handleScroll);
+
+
+
+
+function createMessageElement(sender, content, isSent) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', isSent ? 'sent' : 'received');
+
+    const avatarDiv = document.createElement('div');
+        avatarDiv.classList.add('avatar');
+        avatarDiv.textContent = sender.charAt(0).toUpperCase();
+
+    const textDiv = document.createElement('div');
+    textDiv.classList.add('text');
+    textDiv.textContent = content;
+
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(textDiv);
+    return messageDiv;
 }
 
-
-function renderMoreMessages() {
-    const chat = document.getElementById('chat');
-    const previousScrollHeight = chat.scrollHeight;
-
-    const messagesToRender = messageHistory.slice(currentOffset, currentOffset + PAGE_SIZE);
-    messagesToRender.forEach(message => {
-        displayMessage(message.Sender, message.Content, false);
-    });
-
-    // Restore the scroll position after adding new messages
-    chat.scrollTop = chat.scrollHeight - previousScrollHeight;
-}
 
 function throttle(func, limit) {
     let lastFunc;
@@ -227,18 +274,4 @@ function updateUserList(username, message) {
     // Re-render the user list with the new order and updated message preview
     const userListContainer = document.getElementById('user-list');
     userListContainer.innerHTML = renderUserList2();
-}
-
-
-export function setupEventListeners() {
-    // Initialize handleScroll with the throttled function if it's not already set
-    if (!handleScroll) {
-        handleScroll = throttle(function() {
-            const chat = document.getElementById('chat');
-            if (chat.scrollTop === 0 && currentOffset > 0) {
-                currentOffset -= PAGE_SIZE;
-                renderMoreMessages();
-            }
-        }, 200);
-    }
 }

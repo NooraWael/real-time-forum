@@ -63,6 +63,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
                     "type": "message",
                     "from": message.Sender,
                     "text": message.Content,
+                    "type2": "history",
                 }
                 if err := ws.WriteJSON(messageMap); err != nil {
                     log.Printf("error sending message history: %v", err)
