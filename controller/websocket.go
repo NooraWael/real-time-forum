@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"forum/model"
 	"log"
 	"net/http"
@@ -89,11 +88,9 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
         switch msg["type"] {
         case "message":
-            fmt.Println("we got here")
             recipientUsername := msg["to"]
             recipientConn := getUserConnByUsername(recipientUsername)
-            fmt.Println("sendingto ", msg["from"])
-            fmt.Println("sendingto", msg["to"])
+
             if recipientConn != nil {
                 sendMessage(recipientConn, msg["from"], msg["text"])
             }
