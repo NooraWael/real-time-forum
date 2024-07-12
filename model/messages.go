@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -191,10 +190,16 @@ func GetMessageHistoryUserArranged(sender string, recipients []string) ([][2]str
 		}
 	}
 
-	// Sort with messages by LastSentTime (earliest to latest)
-	sort.Slice(withMessages, func(i, j int) bool {
-		return withMessages[i].LastSentTime.Before(withMessages[j].LastSentTime)
-	})
+	// Manually sort withMessages by LastSentTime (latest to earliest)
+	for i := 1; i < len(withMessages); i++ {
+		key := withMessages[i]
+		j := i - 1
+		for j >= 0 && withMessages[j].LastSentTime.Before(key.LastSentTime) {
+			withMessages[j+1] = withMessages[j]
+			j = j - 1
+		}
+		withMessages[j+1] = key
+	}
 
 	// Sort without messages alphabetically by Recipient
 	sort.Slice(withoutMessages, func(i, j int) bool {
@@ -209,6 +214,5 @@ func GetMessageHistoryUserArranged(sender string, recipients []string) ([][2]str
 	for _, info := range withoutMessages {
 		sortedMessagePairs = append(sortedMessagePairs, [2]string{info.Recipient, info.Content})
 	}
-	fmt.Println(sortedMessagePairs)
 	return sortedMessagePairs, nil
 }

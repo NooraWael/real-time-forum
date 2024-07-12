@@ -81,7 +81,7 @@ export function renderUserChat(data) {
     socket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg.type === 'message' && msg.from != recipient && msg.from != username) {
-
+            fetchAndRenderAllUsers();
         } else if (msg.type2 === 'history') {
             messageHistory.push(msg)
             renderMessages();
