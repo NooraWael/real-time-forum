@@ -28,7 +28,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Render the navbar
             renderNavbar('navbar', navbarHTML);
+
+            if (session.UserName) {
+                const socket = new WebSocket('ws://localhost:3000/ws');
+
+                socket.onopen = () => {
+                    console.log('Connected to the server');
+                    socket.send(JSON.stringify({ type: 'register', username: session.UserName }));
+                };
+
+                window.onbeforeunload = () => {
+                    socket.send(JSON.stringify({ type: 'disconnect', username: session.UserName }));
+                    socket.close();
+                };
+
+                socket.onclose = () => {
+                    console.log('Disconnected from the server');
+                };
+
+                socket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+            }
         })
+
+        
         .catch(error => {
             console.error('Error fetching session:', error);
             // If session fetch fails, assume no session and render guest navbar
