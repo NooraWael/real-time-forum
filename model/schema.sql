@@ -6,6 +6,10 @@ CREATE TABLE
     IF NOT EXISTS users (
         username TEXT PRIMARY KEY, -- confirm if unique will help in checking for existing usernames (return error?)
         email TEXT NOT NULL UNIQUE,
+        firstName TEXT NOT NULL,
+        lastName TEXT NOT NULL,
+        gender TEXT NOT NULL,
+        age INTEGER NOT NULL,
         password TEXT NOT NULL,
         status TEXT,
         role TEXT DEFAULT 'user'

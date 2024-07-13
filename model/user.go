@@ -9,6 +9,10 @@ import (
 type User struct {
 	UserName   string
 	Email      string
+	FirstName string
+	LastName string
+	Gender string
+	Age int
 	Password   string
 	Role       string
 	Created_At time.Time
@@ -16,13 +20,13 @@ type User struct {
 }
 
 func (u *User) Create() (err error) {
-	stmt, err := DB.Prepare(`INSERT INTO users (username, email, password)
-    VALUES (?, ?, ?)`)
+	stmt, err := DB.Prepare(`INSERT INTO users (username, email,firstName,lastName,gender,age, password)
+    VALUES (?, ?, ?,?,?,?,?)`)
 	if err != nil {
 		return
 	}
 
-	_, err = stmt.Exec(u.UserName, u.Email, u.Password)
+	_, err = stmt.Exec(u.UserName, u.Email,u.FirstName,u.LastName,u.Gender,u.Age, u.Password)
 	if err != nil {
 		return
 	}
@@ -30,7 +34,7 @@ func (u *User) Create() (err error) {
 	return
 }
 
-func NewUser(userName, email, password string) (*User, error) {
+func NewUser(userName, email, password,firstName,lastName,gender string, age int) (*User, error) {
 	encPass, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return nil, err
@@ -39,18 +43,22 @@ func NewUser(userName, email, password string) (*User, error) {
 	return &User{
 		UserName: userName,
 		Email:    email,
+		FirstName: firstName,
+		LastName: lastName,
+		Gender: gender,
+		Age: age,
 		Password: string(encPass),
 	}, nil
 }
 
 func GetUser(username, password string) (user User, err error) {
 	user = User{}
-	stmt, err := DB.Prepare(`SELECT * FROM users WHERE username=?`)
+	stmt, err := DB.Prepare(`SELECT * FROM users WHERE username=? OR email=?`)
 	if err != nil {
 		return
 	}
 
-	err = stmt.QueryRow(username).Scan(&user.UserName, &user.Email, &user.Password,&user.status, &user.Role, &user.Created_At)
+	err = stmt.QueryRow(username,username).Scan(&user.UserName, &user.Email,&user.FirstName,&user.LastName,&user.Gender,&user.Age, &user.Password,&user.status, &user.Role, &user.Created_At)
 	if err != nil {
 		return
 	}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+    "strconv"
 
 	"github.com/gofrs/uuid"
 )
@@ -15,6 +16,10 @@ type SignupRequest struct {
 	UserName string `json:"user_name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	LastName string `json:"lastname"`
+	FirstName string `json:"firstname"`
+	Gender string `json:"gender"`
+	Age string `json:"age"`
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
@@ -34,15 +39,28 @@ func signupProcess(w http.ResponseWriter, r *http.Request) {
 	req.Email = strings.TrimSpace(req.Email)
 	req.Password = strings.TrimSpace(req.Password)
 
+	
+	req.FirstName = strings.TrimSpace(req.FirstName)
+	req.LastName = strings.TrimSpace(req.LastName)
+	req.Gender = strings.TrimSpace(req.Gender)
+	
+	fmt.Println(req.Age)
+	age, err := strconv.Atoi(req.Age)
+    if err != nil {
+        fmt.Println("Error parsing age:", err)
+        return
+    }
+
 	// Validate required fields
-	if req.UserName == "" || req.Email == "" || req.Password == "" {
+	if req.UserName == "" || req.Email == "" || req.Password == "" || req.FirstName == "" || req.LastName == "" {
 		http.Error(w, `{"error": "All fields are required"}`, http.StatusBadRequest)
 		return
 	}
 
 	// Create new user
-	user, err := model.NewUser(req.UserName, req.Email, req.Password)
+	user, err := model.NewUser(req.UserName, req.Email, req.Password,req.FirstName,req.LastName,req.Gender,age)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
 		return
 	}
@@ -51,6 +69,8 @@ func signupProcess(w http.ResponseWriter, r *http.Request) {
 	err = user.Create()
 	if err != nil {
 		var errorMessage string
+
+		fmt.Println(err)
 		switch {
 		case strings.Contains(err.Error(), "UNIQUE constraint failed: users.username"):
 			errorMessage = "Username already exists. Try another one."
