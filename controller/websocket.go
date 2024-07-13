@@ -104,6 +104,14 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
                 // Handle error appropriately (e.g., inform users)
             }
 
+        case "typing":
+            recipientUsername := msg["to"]
+            recipientConn := getUserConnByUsername(recipientUsername)
+            if recipientConn != nil {
+                sendTypingStatus(recipientConn, msg["from"], msg["status"])
+            }
+
+
         case "disconnect":
             mu.Lock()
             delete(userConnections, msg["username"])
@@ -168,4 +176,21 @@ func getUsernameByConn(conn *websocket.Conn) string {
         }
     }
     return ""
+}
+
+
+// sendTypingStatus sends a typing status to a WebSocket connection.
+func sendTypingStatus(conn *websocket.Conn, from, status string) {
+    message := map[string]string{
+        "type": "typing",
+        "from": from,
+        "status": status,
+    }
+    if err := conn.WriteJSON(message); err != nil {
+        log.Printf("error: %v", err)
+        conn.Close()
+        mu.Lock()
+        defer mu.Unlock()
+        delete(userConnections, getUsernameByConn(conn))
+    }
 }

@@ -8,7 +8,8 @@ let currentOffset = 0;
 const PAGE_SIZE = 20;
 let handleScroll;
 let recipient2 = "";
-let times = 0
+let times = 0;
+let typingTimeout;
 
 export function fetchAndRenderUserChat(username) {
     fetch(`/api/userchat/${username}`)
@@ -52,6 +53,7 @@ export function renderUserChat(data) {
         <div class="chat-container">
             <div class="chat-header">
                 <h3>Chat with ${data.Recipient}</h3>
+                <div id="typing-indicator" class="typing-indicator"></div>
             </div>
             <div id="chat">
               
@@ -71,6 +73,7 @@ export function renderUserChat(data) {
     const chat = document.getElementById('chat');
     const messageInput = document.getElementById('message');
     const sendButton = document.getElementById('send');
+    const typingIndicator = document.getElementById('typing-indicator');
 
     socket.onopen = () => {
         console.log('Connected to the server');
@@ -92,6 +95,8 @@ export function renderUserChat(data) {
             console.log(msg)
             displayMessage(msg.from, msg.text, false);
             fetchAndRenderAllUsers();
+        } else if (msg.type === 'typing') {
+            showTypingIndicator(msg.from, msg.status);
         } else if (msg.type === 'userList') {
             onlineUsers = msg.users;
             updateOnlineUsers();
@@ -100,6 +105,27 @@ export function renderUserChat(data) {
             fetchAndRenderAllUsers();
         } // Display only if from matches recipient
     };
+
+    messageInput.oninput = () => {
+        socket.send(JSON.stringify({ type: 'typing', from: username, to: recipient, status: 'typing' }));
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            console.log("send")
+            socket.send(JSON.stringify({ type: 'typing', from: username, to: recipient, status: 'stop' }));
+        }, 3000); // Stop typing indicator after 3 seconds of inactivity
+    };
+
+    function showTypingIndicator(user, status) {
+        if (status === 'typing') {
+            typingIndicator.innerHTML = `
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+            `;
+        } else {
+            typingIndicator.innerHTML = '';
+        }
+    }
 
     sendButton.onclick = () => {
         const text = messageInput.value.trim();

@@ -1,7 +1,40 @@
 
 
 export function styling(){
-    return     `@keyframes slideIn {
+    return     `
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .typing-indicator .bubble {
+        width: 10px;
+        height: 10px;
+        background-color: #ccc;
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: typing 1.4s infinite ease-in-out both;
+    }
+    .typing-indicator .bubble:nth-child(1) {
+        animation-delay: -0.32s;
+    }
+    .typing-indicator .bubble:nth-child(2) {
+        animation-delay: -0.16s;
+    }
+    .typing-indicator .bubble:nth-child(3) {
+        animation-delay: 0;
+    }
+    @keyframes typing {
+        0%, 80%, 100% {
+            transform: scale(0);
+        }
+        40% {
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes slideIn {
         from {
             transform: translateY(100%);
             opacity: 0;
