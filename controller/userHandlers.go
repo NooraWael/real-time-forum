@@ -11,43 +11,59 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+type SignupRequest struct {
+	UserName string `json:"user_name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func signup(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "signup.html", nil)
 }
-
 func signupProcess(w http.ResponseWriter, r *http.Request) {
-	user, err := model.NewUser(
-		strings.TrimSpace(r.PostFormValue("user_name")),
-		strings.TrimSpace(r.PostFormValue("email")),
-		strings.TrimSpace(r.PostFormValue("password")))
-
+	// Decode JSON request body
+	var req SignupRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		errorHandler(w, http.StatusInternalServerError)
+		http.Error(w, `{"error": "Invalid JSON"}`, http.StatusBadRequest)
 		return
 	}
 
-	if user.UserName == "" || user.Password == "" || user.Email == "" {
-		errorHandler(w, http.StatusBadRequest)
+	// Trim whitespace
+	req.UserName = strings.TrimSpace(req.UserName)
+	req.Email = strings.TrimSpace(req.Email)
+	req.Password = strings.TrimSpace(req.Password)
+
+	// Validate required fields
+	if req.UserName == "" || req.Email == "" || req.Password == "" {
+		http.Error(w, `{"error": "All fields are required"}`, http.StatusBadRequest)
 		return
 	}
 
+	// Create new user
+	user, err := model.NewUser(req.UserName, req.Email, req.Password)
+	if err != nil {
+		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Attempt to create the user
 	err = user.Create()
-
-	if err != nil { // if error is returned, means invalid login
-		data.Username = r.PostFormValue("user_name")
-		if err.Error() == "UNIQUE constraint failed: users.username" {
-			data.Message = "User already exists... Try another one"
-
-		} else if err.Error() == "UNIQUE constraint failed: users.email" {
-
-			data.Message = "Email already exists... did you forget?"
+	if err != nil {
+		var errorMessage string
+		switch {
+		case strings.Contains(err.Error(), "UNIQUE constraint failed: users.username"):
+			errorMessage = "Username already exists. Try another one."
+		case strings.Contains(err.Error(), "UNIQUE constraint failed: users.email"):
+			errorMessage = "Email already exists. Did you forget?"
+		default:
+			errorMessage = "Internal server error"
 		}
-		tmpl.ExecuteTemplate(w, "signup.html", data)
+		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, errorMessage), http.StatusInternalServerError)
 		return
 	}
 
-	data.Message = "" // if signup is successful so clear the message just incase
-
+	// Generate session UUID
 	uuid, _ := uuid.NewV1()
 	c := &http.Cookie{
 		Name:     "user_session",
@@ -58,16 +74,21 @@ func signupProcess(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, c)
 
+	// Create new session
 	session := model.NewSession(uuid.String(), user.UserName)
 	err = session.Create()
 	if err != nil {
-		errorHandler(w, http.StatusInternalServerError)
+		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
 		return
 	}
 
+	// Change user status to online
 	model.ChangeStatus(user.UserName, "online")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 
+	// Return success response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "Signup successful"}`))
 }
 
 func login(w http.ResponseWriter, r *http.Request) {

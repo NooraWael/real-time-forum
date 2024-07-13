@@ -12,9 +12,9 @@ func MuxSetup() (mux *http.ServeMux) {
 	mux.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("view/assets/css"))))
 
 	mux.HandleFunc("/", Index2)
-	mux.HandleFunc("GET /signup/", signup)
+	mux.HandleFunc("GET /signup/", redirecting)
 	mux.HandleFunc("POST /signup/process", signupProcess)
-	mux.HandleFunc("GET /login/", login)
+	mux.HandleFunc("GET /login/", redirecting)
 	mux.HandleFunc("POST /login/process", loginProcess)
 	// mux.HandleFunc("GET /admin", admin)
 	// mux.HandleFunc("GET /admin/process", adminProcess)

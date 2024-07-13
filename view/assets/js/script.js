@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname;
 
     // Initial rendering based on the current path
-    handleRoute(path);
+  
 
     // Fetch user session status
     fetch('/api/session')
@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Render the navbar
             renderNavbar('navbar', navbarHTML);
 
+            handleRoute(path);
             if (session.UserName) {
                 const socket = new WebSocket('ws://localhost:8080/ws');
 
@@ -53,12 +54,20 @@ document.addEventListener('DOMContentLoaded', function() {
         })
 
         
+        
         .catch(error => {
             console.error('Error fetching session:', error);
             // If session fetch fails, assume no session and render guest navbar
             renderNavbar('navbar', guestNavBar());
+            if (path == '/signup' || path == '/signup/' ){
+                renderSignup();
+            }else{
+                renderLogin();
+            }
+   
         });
 
+       
     // Listen for popstate events (back/forward navigation)
     window.addEventListener('popstate', function(event) {
         handleRoute(window.location.pathname);
