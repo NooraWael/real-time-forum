@@ -32,64 +32,62 @@ func addPostPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func addPostProcess(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		// routed to 400.html
-		errorHandler(w, http.StatusMethodNotAllowed)
+	if r.Method != http.MethodPost {
+		http.Error(w, `{"error": "Method not allowed"}`, http.StatusMethodNotAllowed)
 		return
 	}
 
 	cookie, err := r.Cookie("user_session")
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 		return
 	}
 
 	var session model.Session
 	session, err = model.GetSession(cookie.Value)
-	if err != nil { // if session is not in database, means session timed out
-		http.Redirect(w, r, "/login/", http.StatusSeeOther)
+	if err != nil {
+		http.Error(w, `{"error": "Session timed out"}`, http.StatusUnauthorized)
 		return
 	}
 
 	if err = r.ParseForm(); err != nil {
-		errorHandler(w, http.StatusBadRequest)
+		http.Error(w, `{"error": "Invalid form data"}`, http.StatusBadRequest)
 		return
 	}
 
 	categories := r.Form["category"]
 	title := strings.TrimSpace(r.FormValue("title"))
 	content := strings.TrimSpace(r.FormValue("content"))
-	
-	// only gets to this point through terminal, so 400
-	if title == ""  || content == ""{
-		errorHandler(w, http.StatusBadRequest)
+
+	if title == "" || content == "" {
+		http.Error(w, `{"error": "All fields are required"}`, http.StatusBadRequest)
 		return
 	}
 
 	thisPost := model.NewPost(session.UserName, title, content)
-	thisPost.Likes, thisPost.DisLikes = 0, 0 // zero likes/dislikes initiailly
+	thisPost.Likes, thisPost.DisLikes = 0, 0
 	thisPost.ID, err = thisPost.Create()
 	if err != nil {
-		errorHandler(w, http.StatusInternalServerError)
+		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
 		return
 	}
 
-
-	// inputting all the categories selected to the post_category table
 	for _, cat := range categories {
 		category, err := model.GetCategory(cat)
 		if err != nil {
-			errorHandler(w, http.StatusInternalServerError)
+			http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
 			return
 		}
 		err = model.AddPostCategory(*thisPost, *category)
 		if err != nil {
-			errorHandler(w, http.StatusInternalServerError)
+			http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
 			return
 		}
 	}
 
-	http.Redirect(w, r, "/?success=Post added successfully", http.StatusSeeOther) // REDIRECT TO POST PAGE
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"success": true, "message": "Post added successfully"}`))
 }
 
 func showPost(w http.ResponseWriter, r *http.Request) {

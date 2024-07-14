@@ -2,7 +2,6 @@ export function renderSignup() {
     document.getElementById('content').innerHTML = `
         <link href="/css/login.css" rel="stylesheet">
     <div class="wrapper">
-
         <div class="container">
             <h2>Create Your Account</h2>
             <form id="signupForm" method="post">
@@ -25,7 +24,7 @@ export function renderSignup() {
                 <div id="lastNameError" class="error-message"></div>
                 
                 <div class="gender-container">
-                    <input type="radio" id="male" name="gender" value="male" required>
+                    <input type="radio" id="male" name="gender" value="male" required checked>
                     <label for="male">Male</label>
                     
                     <input type="radio" id="female" name="gender" value="female" required>
@@ -42,7 +41,7 @@ export function renderSignup() {
                 Have an account? <a href="/login">Sign in</a>
             </div>
         </div>
- </div>
+    </div>
     `;
 
     const togglePassword = document.querySelector('#togglePassword');
@@ -74,6 +73,7 @@ export function renderSignup() {
         const trimmedUsername = username.value.trim();
         const trimmedEmail = email.value.trim();
         const trimmedPassword = password.value.trim();
+        const ageValue = age.value.trim();
 
         let isValid = true;
 
@@ -101,18 +101,20 @@ export function renderSignup() {
             passwordError.textContent = '';
         }
 
-        submitBtn.disabled = !isValid;
-    }
+        if (isNaN(ageValue) || ageValue === '') {
+            ageError.textContent = 'Age must be a number.';
+            isValid = false;
+        } else {
+            ageError.textContent = '';
+        }
 
-    username.addEventListener('input', validateForm);
-    email.addEventListener('input', validateForm);
-    password.addEventListener('input', validateForm);
+        return isValid;
+    }
 
     signupForm.addEventListener('submit', async function (event) {
         event.preventDefault();
-        validateForm();
 
-        if (submitBtn.disabled) {
+        if (!validateForm()) {
             return;
         }
 
@@ -147,19 +149,18 @@ export function renderSignup() {
                     emailError.textContent = result.error;
                 } else if (result.error.includes('Password')) {
                     passwordError.textContent = result.error;
+                } else if (result.error.includes('Age')) {
+                    ageError.textContent = result.error;
                 } else {
                     alert(result.error);
                 }
             } else {
-                alert(result.message);
                 window.location.href = '/';
             }
         } catch (error) {
             alert('An error occurred. Please try again.', error);
         }
     });
-
-    validateForm();
 }
 
 

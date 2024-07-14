@@ -122,3 +122,14 @@ body {
 .back-button:hover {
     background-color: #5b6eae;
 }
+
+
+.gender-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gender-container input[type="radio"] {
+    margin-right: 5px;
+}

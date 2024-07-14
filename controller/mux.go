@@ -48,5 +48,6 @@ func MuxSetup() (mux *http.ServeMux) {
 	mux.HandleFunc("/ws", handleConnections)
 	mux.HandleFunc("/users", redirecting)
 	mux.HandleFunc("/api/allusers",getAllUsers)
+	mux.HandleFunc("/addPostProcess", addPostProcess)
 	return
 }
