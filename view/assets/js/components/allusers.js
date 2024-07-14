@@ -107,7 +107,7 @@ export function renderAllUsers(users) {
                             <div class="username1">${user[0]}</div>
                             <div class="message-container">
                                 <div class="message-preview1">${user[1]}</div>
-                                ${user[2] ? `<div class="last-sent-time">${new Date(user[2]).toLocaleString()}</div>` : ''}
+                                ${user[2] ? `<div class="last-sent-time">${formatDate(user[2])}</div>` : ''}
                             </div>
                         </div>
                     </div>`).join('')}
@@ -127,4 +127,16 @@ export function renderAllUsers(users) {
     document.getElementById('start-chatting1').addEventListener('click', () => {
         window.location.href = '/userchat';
     });
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getUTCFullYear();
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    }
 }
+

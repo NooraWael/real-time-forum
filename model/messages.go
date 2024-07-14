@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -214,6 +215,6 @@ func GetMessageHistoryUserArranged(sender string, recipients []string) ([][3]str
 	for _, info := range withoutMessages {
 		sortedMessagePairs = append(sortedMessagePairs, [3]string{info.Recipient, info.Content, ""})
 	}
-	
+	fmt.Println(sortedMessagePairs)
 	return sortedMessagePairs, nil
 }
