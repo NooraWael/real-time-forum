@@ -4,7 +4,7 @@ export function guestNavBar() {
         <script src="https://kit.fontawesome.com/4ff99e7c8c.js" crossorigin="anonymous"></script>
         <div class="header">
             <div class="forum-container">
-                <div class="forum-text" onclick="startAnimation()">
+                <div class="forum-text" onclick="startAnimation()" style="background-color=#2c2f33">
                     <span>F</span>
                     <span>O</span>
                     <span>R</span>
@@ -13,8 +13,8 @@ export function guestNavBar() {
                 </div>
             </div>
             <div class="header-right">
-                <a class="button" href="/login"><i class="fas fa-sign-in-alt"></i><span>Log In</span></a>
-                <a class="button" href="/signup"><i class="fas fa-user-plus"></i><span>Register</span></a>
+                <a class="button" href="/login"><i class="fas fa-sign-in-alt" style="background-color=#2c2f33"></i><span style="background-color=#2c2f33">Log In</span></a>
+                <a class="button" href="/signup"><i class="fas fa-user-plus" style="background-color=#2c2f33"></i><span style="background-color=#2c2f33">Register</span></a>
             </div>
         </div>
 
@@ -49,10 +49,10 @@ export function userNavBar() {
                 </div>
             </div>
             <div class="header-right">
-                <a class="button" href="/"><i class="fas fa-home"></i><span>Home</span></a>
-                <a class="button" href="/userchat"><i class="fas fa-comments"></i><span>Chats</span></a>
-                <a class="button" href="/addpost"><i class="fas fa-plus"></i><span>Add Post</span></a>
-                <a class="button" href="/logout"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></a>
+                <a class="button" href="/"><i class="fas fa-home" style="background-color=#2c2f33"></i><span style="background-color=#2c2f33">Home</span></a>
+                <a class="button" href="/userchat"><i class="fas fa-comments" style="background-color=#2c2f33"></i><span style="background-color=#2c2f33">Chats</span></a>
+                <a class="button" href="/addpost"><i class="fas fa-plus" style="background-color=#2c2f33"></i><span style="background-color=#2c2f33">Add Post</span></a>
+                <a class="button" href="/logout"><i class="fas fa-sign-out-alt" style="background-color=#2c2f33"></i><span style="background-color=#2c2f33">Log Out</span></a>
             </div>
         </div>
 

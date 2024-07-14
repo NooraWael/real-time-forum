@@ -150,7 +150,7 @@ export function fetchAndRenderPosts() {
                                 <h2>${post.Title}</h2>
                             </div>
                             <div class="content-container">
-                                <p>${post.Content}</p>
+                                <p style="max-width: 12.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${post.Content}</p>
                             </div>
                             <div class="button-container">
                             <div onclick="window.location.href = '/posts/${post.ID}'">

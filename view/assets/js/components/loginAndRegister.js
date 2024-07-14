@@ -1,6 +1,8 @@
 export function renderSignup() {
     document.getElementById('content').innerHTML = `
         <link href="/css/login.css" rel="stylesheet">
+    <div class="wrapper">
+
         <div class="container">
             <h2>Create Your Account</h2>
             <form id="signupForm" method="post">
@@ -40,6 +42,7 @@ export function renderSignup() {
                 Have an account? <a href="/login">Sign in</a>
             </div>
         </div>
+ </div>
     `;
 
     const togglePassword = document.querySelector('#togglePassword');
@@ -164,6 +167,8 @@ export function renderSignup() {
 export function renderLogin() {
     document.getElementById('content').innerHTML = `
     <link href="/css/login.css" rel="stylesheet">
+            <div class="wrapper">
+
 <div class="container">
     <h2>Welcome to the Forum</h2>
     <form action="/login/process" method="post">
@@ -178,6 +183,7 @@ export function renderLogin() {
         don't have an account? <a href="/signup">Sign up</a>
 
     </div>
+</div>
 </div>
 
 <script>
