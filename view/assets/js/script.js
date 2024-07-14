@@ -102,9 +102,29 @@ function handleRoute(path) {
                 break;
         default:
             if (path.startsWith('/userchat/')) {
+
+
+                
                 fetchAndRenderAllUsers()
+                console.log(path)
                 const recipientUsername = path.substring(10); // Extract recipient username from URL
-                fetchAndRenderUserChat(recipientUsername)}
+                if (path == '/userchat/'){
+                    fetchAndRenderUserChat(recipientUsername);
+                    return
+                }
+                isUserValid(recipientUsername).then(isValid => {
+                    if (isValid) {
+                        fetchAndRenderUserChat(recipientUsername);
+                    } else {
+                        alert('Wrong page');
+                        window.location.href = "/";
+                    }
+                }).catch(error => {
+                    console.error('Error checking user validity:', error);
+                    alert('An error occurred');
+                    window.location.href = "/";
+                });
+                }
 
             // Assume it's a post detail page
             else if (path.startsWith('/posts/')) {
@@ -123,4 +143,27 @@ function handleRoute(path) {
 function renderNavbar(elementId, navbarHTML) {
     document.getElementById(elementId).innerHTML = navbarHTML;
 }
+
+
+function isUserValid(username) {
+    return fetch('/api/allusers')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+            return response.json();
+        })
+        .then(users => {
+            return users.some(user => user[0] === username);
+        })
+        .catch(error => {
+            console.error('Error fetching users:', error);
+            // Handle error appropriately, e.g., render error message or retry
+            return false; // Return false in case of an error
+        });
+}
+
+
+
+
 
