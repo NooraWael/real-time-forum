@@ -18,7 +18,7 @@ func MuxSetup() (mux *http.ServeMux) {
 	mux.HandleFunc("POST /login/process", loginProcess)
 	// mux.HandleFunc("GET /admin", admin)
 	// mux.HandleFunc("GET /admin/process", adminProcess)
-	mux.HandleFunc("GET /user/{username}", userProfile)
+	//mux.HandleFunc("GET /user/{username}", userProfile)
 
 	mux.HandleFunc("GET /addpost", redirecting)
 	mux.HandleFunc("POST /addpost", addPostProcess)
@@ -34,7 +34,7 @@ func MuxSetup() (mux *http.ServeMux) {
 	// mux.HandleFunc("/updatepost", updatePost)
 	// mux.HandleFunc("/deletepost", deletePost)
 
-	mux.HandleFunc("GET /filterposts", filterPosts)
+	//mux.HandleFunc("GET /filterposts", filterPosts)
 
 	
 	mux.HandleFunc("/api/posts", FetchPosts)
