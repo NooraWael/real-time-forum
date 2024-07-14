@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -62,6 +63,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
                     "from": message.Sender,
                     "text": message.Content,
                     "type2": "history",
+                    "date": message.SentAt.Format("2006-01-02 15:04:05"), // Include timestamp
                 }
                 if err := ws.WriteJSON(messageMap); err != nil {
                     log.Printf("error sending message history: %v", err)
@@ -111,7 +113,6 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
                 sendTypingStatus(recipientConn, msg["from"], msg["status"])
             }
 
-
         case "disconnect":
             mu.Lock()
             delete(userConnections, msg["username"])
@@ -128,12 +129,13 @@ func getUserConnByUsername(username string) *websocket.Conn {
     return userConnections[username]
 }
 
-// sendMessage sends a message to a WebSocket connection.
+// sendMessage sends a message to a WebSocket connection with a timestamp.
 func sendMessage(conn *websocket.Conn, from, text string) {
     message := map[string]string{
         "type": "message",
         "from": from,
         "text": text,
+        "date": time.Now().Format(time.RFC3339), // Include timestamp
     }
     if err := conn.WriteJSON(message); err != nil {
         log.Printf("error: %v", err)
@@ -177,7 +179,6 @@ func getUsernameByConn(conn *websocket.Conn) string {
     }
     return ""
 }
-
 
 // sendTypingStatus sends a typing status to a WebSocket connection.
 func sendTypingStatus(conn *websocket.Conn, from, status string) {

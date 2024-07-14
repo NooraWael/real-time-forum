@@ -89,7 +89,7 @@ export function renderUserChat(data) {
             messageHistory.push(msg)
             renderMessages();
         } else if (msg.type === 'message' && msg.from === recipient) {
-            displayMessage(msg.from, msg.text, false);
+            displayMessage(msg.from, msg.text,msg.date, false);
             fetchAndRenderAllUsers();
         } else if (msg.type === 'typing') {
             showTypingIndicator(msg.from, msg.status);
@@ -97,7 +97,7 @@ export function renderUserChat(data) {
             onlineUsers = msg.users;
             updateOnlineUsers();
         } else {
-            displayMessage(msg.from, msg.text, true);
+            displayMessage(msg.from, msg.text,msg.date, true);
             fetchAndRenderAllUsers();
         } // Display only if from matches recipient
     };
@@ -146,7 +146,7 @@ export function renderUserChat(data) {
 
     
 
-    function displayMessage(user, text, isSent) {
+    function displayMessage(user, text,date, isSent) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message');
         if (isSent) {
@@ -154,15 +154,20 @@ export function renderUserChat(data) {
         } else {
             messageDiv.classList.add('received');
         }
-
+    
         const avatarDiv = document.createElement('div');
         avatarDiv.classList.add('avatar');
         avatarDiv.textContent = user.charAt(0).toUpperCase();
-
+    
         const textDiv = document.createElement('div');
         textDiv.classList.add('text');
         textDiv.textContent = text;
-
+    
+        const dateDiv = document.createElement('div');
+        dateDiv.classList.add('date');
+        dateDiv.textContent = formatDate(date)
+    
+        textDiv.appendChild(dateDiv);
         messageDiv.appendChild(avatarDiv);
         messageDiv.appendChild(textDiv);
         chat.prepend(messageDiv);
@@ -184,9 +189,9 @@ export function renderUserChat(data) {
         const messagesToRender = messageHistory.slice(Math.max(0, messageHistory.length - PAGE_SIZE));
         messagesToRender.forEach(message => {
             if(message.from === recipient2){
-                displayMessage(message.from, message.text, false);
+                displayMessage(message.from, message.text,message.date, false);
             }else {
-                displayMessage(message.from, message.text, true);
+                displayMessage(message.from, message.text,message.date, true);
             }
         });
     
@@ -219,7 +224,7 @@ export function renderUserChat(data) {
     
         // Use append directly for each new message
         additionalMessages.forEach(message => {
-            const messageElement = createMessageElement(message.from, message.text, message.from === recipient2);
+            const messageElement = createMessageElement(message.from, message.text,message.date, message.from === recipient2);
             chat.appendChild(messageElement); // Append at the visual bottom, which is the actual DOM top
         });
     
@@ -235,20 +240,30 @@ export function renderUserChat(data) {
 
 
 
-function createMessageElement(sender, content, isSent) {
+function createMessageElement(sender, content, date, isSent) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', isSent ? 'sent' : 'received');
 
     const avatarDiv = document.createElement('div');
-        avatarDiv.classList.add('avatar');
-        avatarDiv.textContent = sender.charAt(0).toUpperCase();
+    avatarDiv.classList.add('avatar');
+    avatarDiv.textContent = sender.charAt(0).toUpperCase();
 
     const textDiv = document.createElement('div');
     textDiv.classList.add('text');
-    textDiv.textContent = content;
 
+    const contentDiv = document.createElement('div');
+    contentDiv.classList.add('content');
+    contentDiv.textContent = content;
+
+    const dateDiv = document.createElement('div');
+    dateDiv.classList.add('date');
+    dateDiv.textContent = formatDate(date);
+
+    textDiv.appendChild(contentDiv);
+    textDiv.appendChild(dateDiv);
     messageDiv.appendChild(avatarDiv);
     messageDiv.appendChild(textDiv);
+
     return messageDiv;
 }
 
@@ -301,4 +316,15 @@ function updateUserList(username, message) {
     // Re-render the user list with the new order and updated message preview
     const userListContainer = document.getElementById('user-list');
     userListContainer.innerHTML = renderUserList2();
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getUTCFullYear();
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }

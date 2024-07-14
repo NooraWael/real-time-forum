@@ -1,7 +1,5 @@
-
-
-export function styling(){
-    return     `
+export function styling() {
+    return `
     .typing-indicator {
         display: flex;
         align-items: center;
@@ -48,7 +46,7 @@ export function styling(){
     .container {
         display: flex;
         height: 80vh;
-        color: black
+        color: black;
     }
     .sidebar {
         width: 30%;
@@ -158,6 +156,12 @@ export function styling(){
         left: -10px;
         border-width: 10px 10px 10px 0;
         border-color: transparent #fff transparent transparent;
+    }
+    .date {
+        font-size: 10px;
+        color: #aaa;
+        margin-top: 5px;
+        text-align: right;
     }
     .input-container {
         display: flex;
