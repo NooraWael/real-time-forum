@@ -47,7 +47,7 @@ export function styling(){
 
     .container {
         display: flex;
-        height: 100vh;
+        height: 80vh;
         color: black
     }
     .sidebar {

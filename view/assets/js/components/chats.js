@@ -5,7 +5,7 @@ let onlineUsers = [];
 let userChats = {};
 let messageHistory = [];
 let currentOffset = 0;
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 let handleScroll;
 let recipient2 = "";
 let times = 0;
@@ -83,16 +83,12 @@ export function renderUserChat(data) {
 
     socket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
-        if(msg.type === 'message'){
-            console.log(msg)
-        }
         if (msg.type === 'message' && msg.from != recipient && msg.from != username) {
             fetchAndRenderAllUsers();
         } else if (msg.type2 === 'history') {
             messageHistory.push(msg)
             renderMessages();
         } else if (msg.type === 'message' && msg.from === recipient) {
-            console.log(msg)
             displayMessage(msg.from, msg.text, false);
             fetchAndRenderAllUsers();
         } else if (msg.type === 'typing') {
@@ -203,9 +199,10 @@ export function renderUserChat(data) {
         const chat = document.getElementById('chat');
         const maxScrollTop = chat.scrollHeight - chat.clientHeight;
     
+        console.log(chat.scrollTop, maxScrollTop)
         // Assuming that being "near the top" might correspond to a small negative number close to zero
           // Check if the user is near the top of the chat (considering column-reverse layout)
-    if (chat.scrollTop < -maxScrollTop + 100 && currentOffset > 0) {
+    if (chat.scrollTop < -maxScrollTop + 50 && currentOffset > 0) {
         renderMoreMessages();
     }
 }, 200);
