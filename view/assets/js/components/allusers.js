@@ -18,7 +18,6 @@ export function fetchAndRenderAllUsers() {
 
 // Function to render all users
 export function renderAllUsers(users) {
-    console.log("hello")
     const container = document.getElementById('user-list-container');
     container.innerHTML = `
         <style>
@@ -68,19 +67,34 @@ export function renderAllUsers(users) {
                 font-size: 18px;
                 margin-right: 15px;
             }
+            .user-details {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1; /* Ensure it takes available space */
+            }
             .username1 {
                 font-weight: bold;
                 font-size: 16px;
+                margin-bottom: 5px;
+            }
+            .message-container {
+                display: flex;
+                flex-direction: column;
                 flex-grow: 1; /* Ensure it takes available space */
             }
             .message-preview1 {
-                font-size: 12px;
-                color: #888;
-                margin-left: 5px;
-                max-width: 150px;
+                font-size: 14px; /* Increase message font size */
+                color: #bbb; /* Make it a bit lighter */
+                max-width: 200px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-bottom: 3px; /* Space between message and date */
+            }
+            .last-sent-time {
+                font-size: 10px;
+                color: #aaa;
+                align-self: flex-start; /* Align date to the left under the message */
             }
         </style>
         <div class="container1">
@@ -89,8 +103,13 @@ export function renderAllUsers(users) {
                 ${users.map(user => `
                     <div class="user-item1" data-username="${user[0]}">
                         <div class="avatar1">${user[0].charAt(0).toUpperCase()}</div>
-                        <div class="username1">${user[0]}</div>
-                        <div class="message-preview1">${user[1]}</div>
+                        <div class="user-details">
+                            <div class="username1">${user[0]}</div>
+                            <div class="message-container">
+                                <div class="message-preview1">${user[1]}</div>
+                                ${user[2] ? `<div class="last-sent-time">${new Date(user[2]).toLocaleString()}</div>` : ''}
+                            </div>
+                        </div>
                     </div>`).join('')}
             </div>
         </div>

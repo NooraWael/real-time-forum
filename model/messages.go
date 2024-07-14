@@ -148,7 +148,7 @@ func GetMessageHistory(sender, recipient string) ([]*Message, error) {
     return messages, nil
 }
 
-func GetMessageHistoryUserArranged(sender string, recipients []string) ([][2]string, error) {
+func GetMessageHistoryUserArranged(sender string, recipients []string) ([][3]string, error) {
 	type messageInfo struct {
 		Recipient    string
 		Content      string
@@ -186,7 +186,7 @@ func GetMessageHistoryUserArranged(sender string, recipients []string) ([][2]str
 		if info.HasMessage {
 			withMessages = append(withMessages, info)
 		} else {
-			withoutMessages = append(withoutMessages, info)
+			withoutMessages = append(withMessages, info)
 		}
 	}
 
@@ -207,12 +207,13 @@ func GetMessageHistoryUserArranged(sender string, recipients []string) ([][2]str
 	})
 
 	// Combine sorted lists
-	var sortedMessagePairs [][2]string
+	var sortedMessagePairs [][3]string
 	for _, info := range withMessages {
-		sortedMessagePairs = append(sortedMessagePairs, [2]string{info.Recipient, info.Content})
+		sortedMessagePairs = append(sortedMessagePairs, [3]string{info.Recipient, info.Content, info.LastSentTime.Format(time.RFC3339)})
 	}
 	for _, info := range withoutMessages {
-		sortedMessagePairs = append(sortedMessagePairs, [2]string{info.Recipient, info.Content})
+		sortedMessagePairs = append(sortedMessagePairs, [3]string{info.Recipient, info.Content, ""})
 	}
+	
 	return sortedMessagePairs, nil
 }

@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"forum/model"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
-    "strconv"
 
 	"github.com/gofrs/uuid"
 )
 
 type SignupRequest struct {
-	UserName string `json:"user_name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	LastName string `json:"lastname"`
+	UserName  string `json:"user_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	LastName  string `json:"lastname"`
 	FirstName string `json:"firstname"`
-	Gender string `json:"gender"`
-	Age string `json:"age"`
+	Gender    string `json:"gender"`
+	Age       string `json:"age"`
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
@@ -39,17 +39,16 @@ func signupProcess(w http.ResponseWriter, r *http.Request) {
 	req.Email = strings.TrimSpace(req.Email)
 	req.Password = strings.TrimSpace(req.Password)
 
-	
 	req.FirstName = strings.TrimSpace(req.FirstName)
 	req.LastName = strings.TrimSpace(req.LastName)
 	req.Gender = strings.TrimSpace(req.Gender)
-	
+
 	fmt.Println(req.Age)
 	age, err := strconv.Atoi(req.Age)
-    if err != nil {
-        fmt.Println("Error parsing age:", err)
-        return
-    }
+	if err != nil {
+		fmt.Println("Error parsing age:", err)
+		return
+	}
 
 	// Validate required fields
 	if req.UserName == "" || req.Email == "" || req.Password == "" || req.FirstName == "" || req.LastName == "" {
@@ -58,7 +57,7 @@ func signupProcess(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create new user
-	user, err := model.NewUser(req.UserName, req.Email, req.Password,req.FirstName,req.LastName,req.Gender,age)
+	user, err := model.NewUser(req.UserName, req.Email, req.Password, req.FirstName, req.LastName, req.Gender, age)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, `{"error": "Internal server error"}`, http.StatusInternalServerError)
@@ -230,9 +229,9 @@ func userProfile(w http.ResponseWriter, r *http.Request) {
 /* This function does logout functionality by just clearing the available cookies. */
 func logout(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie("user_session")
-    var session model.Session
-    if err == nil {
-        session,err = model.GetSession(c.Value)
+	var session model.Session
+	if err == nil {
+		session, err = model.GetSession(c.Value)
 		if err == nil {
 			model.ChangeStatus(session.UserName, "offline")
 		}
@@ -248,8 +247,6 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &expiringCookie)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-
-
 
 func chatUser(w http.ResponseWriter, r *http.Request) {
 	recipientUsername := strings.TrimPrefix(r.URL.Path, "/api/userchat/")
@@ -267,46 +264,42 @@ func chatUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(recipientUsername)
-	if (recipientUsername == ""){
+	if recipientUsername == "" {
 		recipientUsername = session.UserName
 	}
 
-	
-
-
-	onlineusers,err := model.GetAllOnlineUsers()
+	onlineusers, err := model.GetAllOnlineUsers()
 	if err != nil {
 		http.Error(w, "Invalid session", http.StatusInternalServerError)
 		return
 	}
 
 	var filteredOnlineUsers []string
-for _, user := range onlineusers {
-    if user != session.UserName {
-        filteredOnlineUsers = append(filteredOnlineUsers, user)
-    }
-}
+	for _, user := range onlineusers {
+		if user != session.UserName {
+			filteredOnlineUsers = append(filteredOnlineUsers, user)
+		}
+	}
 
-
-	recentchats, err := model.GetMessageHistoryUser(session.UserName,filteredOnlineUsers)
+	recentchats, err := model.GetMessageHistoryUserArranged(session.UserName, filteredOnlineUsers)
 	if err != nil {
 		fmt.Println("here")
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	data := struct {
-		Username  string
-		Recipient string
-		Online []string
-		Recentchat [][2]string
+		Username   string
+		Recipient  string
+		Online     []string
+		Recentchat [][3]string
 	}{
-		Username:  session.UserName,
-		Recipient: recipientUsername,
-		Online : filteredOnlineUsers,
-		Recentchat : recentchats,
+		Username:   session.UserName,
+		Recipient:  recipientUsername,
+		Online:     filteredOnlineUsers,
+		Recentchat: recentchats,
 	}
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(data)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
 }
