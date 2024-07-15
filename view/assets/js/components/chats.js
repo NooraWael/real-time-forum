@@ -59,7 +59,7 @@ export function renderUserChat(data) {
               
             </div>
             <div class="input-container">
-                <input type="text" id="message" placeholder="Type a message">
+                <input type="text" id="message" placeholder="Type a message" maxlength="150">
                 <button id="send">Send</button>
             </div>
         </div>

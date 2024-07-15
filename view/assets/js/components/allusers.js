@@ -106,7 +106,7 @@ export function renderAllUsers(users) {
                         <div class="user-details">
                             <div class="username1">${user[0]}</div>
                             <div class="message-container">
-                                <div class="message-preview1">${user[1]}</div>
+                                <div class="message-preview1">${user[1].length > 10 ? user[1].substring(0,10) + '...' : user[1]}</div>
                                 ${user[2] ? `<div class="last-sent-time">${formatDate(user[2])}</div>` : ''}
                             </div>
                         </div>
