@@ -1,20 +1,15 @@
 import { guestNavBar, userNavBar } from './components/navbar.js';
-import {renderSignup, renderLogin} from './components/loginAndRegister.js';
-import {addPost, renderAddPost} from './components/addpost.js';
-import {renderNotFound,navigateToHome} from './components/errors.js';
-import {fetchAndRenderUserChat,renderUserChat} from './components/chats.js';
-import {fetchAndRenderPostDetails, renderPostDetails, fetchAndRenderPosts, NavigateToPost} from './components/post.js';
-import {fetchAndRenderOnlineUsers,renderOnlineUsers} from './components/onlineusers.js';
-import {fetchAndRenderAllUsers,renderAllUsers} from './components/allusers.js';
+import { renderSignup, renderLogin } from './components/loginAndRegister.js';
+import { addPost, renderAddPost } from './components/addpost.js';
+import { renderNotFound, navigateToHome } from './components/errors.js';
+import { fetchAndRenderUserChat, renderUserChat } from './components/chats.js';
+import { fetchAndRenderPostDetails, renderPostDetails, fetchAndRenderPosts, NavigateToPost } from './components/post.js';
+import { fetchAndRenderOnlineUsers, renderOnlineUsers } from './components/onlineusers.js';
+import { fetchAndRenderAllUsers, renderAllUsers } from './components/allusers.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch user session status
     const path = window.location.pathname;
 
-    // Initial rendering based on the current path
-  
-
-    // Fetch user session status
     fetch('/api/session')
         .then(response => {
             if (!response.ok) {
@@ -23,10 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(session => {
-            // Determine which navbar template to use
             let navbarHTML = session.UserName ? userNavBar() : guestNavBar();
 
-            // Render the navbar
             renderNavbar('navbar', navbarHTML);
 
             handleRoute(path);
@@ -50,33 +43,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 socket.onerror = (error) => {
                     console.error('WebSocket error:', error);
                 };
+
+                socket.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'message') {
+                        fetchAndRenderAllUsers();
+                    }
+                };
             }
         })
-
-        
-        
         .catch(error => {
             console.error('Error fetching session:', error);
-            // If session fetch fails, assume no session and render guest navbar
             renderNavbar('navbar', guestNavBar());
-            if (path == '/signup' || path == '/signup/' ){
+            if (path === '/signup' || path === '/signup/') {
                 renderSignup();
-            }else{
+            } else {
                 renderLogin();
             }
-   
         });
 
-       
-    // Listen for popstate events (back/forward navigation)
     window.addEventListener('popstate', function(event) {
         handleRoute(window.location.pathname);
     });
-
 });
 
-function handleRoute(path) {
-    console.log(path)
+window.handleRoute = function(path) {
+    console.log(path);
     switch (path) {
         case '/':
             fetchAndRenderPosts();
@@ -84,33 +76,28 @@ function handleRoute(path) {
             break;
         case '/login':
             renderLogin();
-     
             break;
         case '/signup':
             renderSignup();
-      
             break;
         case '/addpost':
             renderAddPost();
-            fetchAndRenderAllUsers()
+            fetchAndRenderAllUsers();
             break;
-            case '/chats':
+        case '/chats':
             fetchAndRenderOnlineUsers();
             break;
-            case '/users':
-                fetchAndRenderAllUsers();
-                break;
+        case '/users':
+            fetchAndRenderAllUsers();
+            break;
         default:
             if (path.startsWith('/userchat/')) {
-
-
-                
-                fetchAndRenderAllUsers()
-                console.log(path)
-                const recipientUsername = path.substring(10); // Extract recipient username from URL
-                if (path == '/userchat/'){
+                fetchAndRenderAllUsers();
+                console.log(path);
+                const recipientUsername = path.substring(10);
+                if (path === '/userchat/') {
                     fetchAndRenderUserChat(recipientUsername);
-                    return
+                    return;
                 }
                 isUserValid(recipientUsername).then(isValid => {
                     if (isValid) {
@@ -124,26 +111,43 @@ function handleRoute(path) {
                     alert('An error occurred');
                     window.location.href = "/";
                 });
-                }
-
-            // Assume it's a post detail page
-            else if (path.startsWith('/posts/')) {
-                fetchAndRenderAllUsers()
-                const postId = path.substring(7); // Extract post ID from URL
+            } else if (path.startsWith('/posts/')) {
+                fetchAndRenderAllUsers();
+                const postId = path.substring(7);
                 fetchAndRenderPostDetails(postId);
             } else {
-                // Handle 404 or other routes
                 renderNotFound();
             }
             break;
     }
-}
-
+};
 
 function renderNavbar(elementId, navbarHTML) {
     document.getElementById(elementId).innerHTML = navbarHTML;
-}
+    const script = document.createElement('script');
+    script.innerHTML = `
+        function navigate(event, path) {
+            if (path === "/logout") {
+                return;
+            }
+            event.preventDefault();
+            history.pushState({}, '', path);
+            handleRoute(path);
+        }
 
+        function startAnimation() {
+            const spans = document.querySelectorAll('.forum-text span');
+            spans.forEach(span => {
+                span.classList.add('animate');
+                span.addEventListener('animationend', () => {
+                    span.classList.remove('animate');
+                    span.classList.add('active');
+                });
+            });
+        }
+    `;
+    document.body.appendChild(script);
+}
 
 function isUserValid(username) {
     return fetch('/api/allusers')
@@ -158,12 +162,6 @@ function isUserValid(username) {
         })
         .catch(error => {
             console.error('Error fetching users:', error);
-            // Handle error appropriately, e.g., render error message or retry
-            return false; // Return false in case of an error
+            return false;
         });
 }
-
-
-
-
-

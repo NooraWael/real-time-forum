@@ -1,6 +1,7 @@
 
 export function renderPostDetails(data) {
     const container = document.getElementById('content');
+    container.innerHTML = ``;
     container.innerHTML = `
         <link href="/css/style3.css" rel="stylesheet">
         <button id="clearbtn" onclick="location.href='/'">Back</button>
@@ -128,7 +129,7 @@ export function fetchAndRenderPosts() {
         .then(response => response.json())
         .then(data => {
             const postsContainer = document.getElementById('content');
-
+            postsContainer.innerHTML = ``;
             data.forEach(post => {
                 let categoriesString = '';
                 post.Categories.forEach(category => {
