@@ -10,6 +10,9 @@ let handleScroll;
 let recipient2 = "";
 let times = 0;
 let typingTimeout;
+let isTyping;
+
+let typingUsers = {};
 
 export function fetchAndRenderUserChat(username) {
     fetch(`/api/userchat/${username}`)
@@ -103,25 +106,24 @@ export function renderUserChat(data) {
     };
 
     messageInput.oninput = () => {
-        socket.send(JSON.stringify({ type: 'typing', from: username, to: recipient, status: 'typing' }));
+        if(!isTyping){
+            socket.send(JSON.stringify({ type: 'typing', from: username, to: recipient, status: 'typing' }));
+            isTyping = true;
+        }
         clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => {
             console.log("send")
             socket.send(JSON.stringify({ type: 'typing', from: username, to: recipient, status: 'stop' }));
-        }, 3000); // Stop typing indicator after 3 seconds of inactivity
+            isTyping = false;
+        }, 2000); // Stop typing indicator after 3 seconds of inactivity
     };
-
+    
     function showTypingIndicator(user, status) {
-        if (status === 'typing') {
-            typingIndicator.innerHTML = `
-                <div class="bubble"></div>
-                <div class="bubble"></div>
-                <div class="bubble"></div>
-            `;
-        } else {
-            typingIndicator.innerHTML = '';
-        }
+        typingUsers[user] = status === 'typing';
+        updateOnlineUsers();
     }
+    
+ 
 
     sendButton.onclick = () => {
         const text = messageInput.value.trim();
@@ -291,17 +293,27 @@ function throttle(func, limit) {
 
 function renderUserList2() {
     return onlineUsers.map(user => {
-        const messageContent = userChats[user] ? userChats[user].slice(0, 20) : '';
+        const isTyping = typingUsers[user];
+        const messageContent = userChats[user] ? (userChats[user].length > 10 ? userChats[user].substring(0, 10) + '...' : userChats[user]) : '';
         return `
             <a href="/userchat/${user}" class="user-item">
                 <div class="user-item-content">
-                    <div class="avatar">${user.charAt(0).toUpperCase()}</div>
+                    ${isTyping ? renderTypingIndicator() : `<div class="avatar">${user.charAt(0).toUpperCase()}</div>`}
                     <div class="username">${user}</div>
                 </div>
             </a>`;
     }).join('');
 }
 
+function renderTypingIndicator() {
+    return `
+        <div class="typing-indicator">
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+        </div>
+    `;
+}
 
 function updateUserList(username, message) {
     userChats[username] = message;

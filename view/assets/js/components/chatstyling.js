@@ -138,6 +138,8 @@ export function styling() {
         font-size: 14px;
         margin: 0 10px;
         position: relative;
+        word-break: break-all; /* Ensures text wrapping */
+        overflow-wrap: break-word; /* Ensures text wrapping */
     }
     .text:before {
         content: "";
@@ -151,11 +153,15 @@ export function styling() {
         right: -10px;
         border-width: 10px 0 10px 10px;
         border-color: transparent transparent transparent #dcf8c6;
+        word-break: break-all; /* Ensures text wrapping */
+        overflow-wrap: break-word; /* Ensures text wrapping */
     }
     .message.received .text:before {
         left: -10px;
         border-width: 10px 10px 10px 0;
         border-color: transparent #fff transparent transparent;
+        word-break: break-all; /* Ensures text wrapping */
+        overflow-wrap: break-word; /* Ensures text wrapping */
     }
     .date {
         font-size: 10px;
@@ -178,6 +184,8 @@ export function styling() {
         font-size: 14px;
         outline: none;
         color: #000;
+        word-break: break-all; /* Ensures text wrapping */
+        overflow-wrap: break-word; /* Ensures text wrapping */
     }
     #send {
         padding: 10px 20px;

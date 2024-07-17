@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     if(msg.type == 'message' && msg.from != session.UserName && !path.startsWith('/userchat')){
+                        console.log("hello what is with you")
                         showNotification(`New message from ${msg.from}: ${msg.text.length > 5 ? msg.text.substring(0, 5) + '...' : msg.text}`);
                     }
                 };
